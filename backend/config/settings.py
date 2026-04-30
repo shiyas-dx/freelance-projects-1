@@ -18,7 +18,7 @@ STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticCloudinaryStorage'
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
     'cloudinary_storage',
@@ -199,3 +199,8 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 BREVO_API_KEY = os.getenv('BREVO_API_KEY')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://luxe-backend-4403.onrender.com',
+    'https://*.onrender.com'
+]
