@@ -21,6 +21,7 @@ from .tasks import send_otp_email
 from products.models import Product
 from orders.models import Order
 import random
+import os
 from django.utils import timezone
 
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
@@ -30,7 +31,8 @@ from dj_rest_auth.registration.views import SocialLoginView
 # ── Google Login View ─────────────────────────────────────────────────────────
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-    callback_url = "http://localhost:5173"
+
+    callback_url = os.getenv('GOOGLE_CALLBACK_URL', "http://localhost:5173")
     client_class = OAuth2Client
 
     def get_response(self):
