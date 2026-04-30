@@ -7,7 +7,9 @@ from .views import (
     AllUserListView,
     MyTokenObtainPairView,
     AdminDashboardStatsView,
-    AdminUserDetailView
+    AdminUserDetailView,
+    VerifyOTPView,
+    VerifyResetOTPView,
 )
 from django.contrib.auth import views as auth_views
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -19,18 +21,22 @@ urlpatterns = [
 
     # Registration and Profile
     path('register/', RegisterView.as_view(), name='register'),
+
     path('profile/', UserProfileUpdateView.as_view(), name='user-profile-update'),
     path('all-users/', AllUserListView.as_view(), name='all-users'),
     path('all-users/<int:pk>/', AdminUserDetailView.as_view(), name='admin-user-detail'),
     
     # API endpoints for password reset logic
-    path('password-reset/', PasswordResetRequestView.as_view(), name='password_reset_api'),
-    path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm_api'),
-    
+    path('password-reset/', PasswordResetRequestView.as_view(), name='password_reset'),
+    path('verify-reset-otp/', VerifyResetOTPView.as_view(), name='verify_reset_otp'),
+    path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+        
     # This path is usually needed for the link sent in the email
     path('password-reset-confirm/<uidb64>/<token>/', 
          auth_views.PasswordResetConfirmView.as_view(), 
          name='password_reset_confirm'),
 
     path('admin-stats/', AdminDashboardStatsView.as_view(), name='admin-stats'),
+    # users/urls.py
+    path('verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
 ]

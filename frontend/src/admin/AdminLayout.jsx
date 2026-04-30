@@ -2,38 +2,56 @@ import { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, Package, ShoppingCart, Users,
-  Menu, X, LogOut, Bell, ChevronRight,
-  TrendingUp, Zap, Settings, History,
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  Menu,
+  X,
+  LogOut,
+  Bell,
+  ChevronRight,
+  TrendingUp,
+  Zap,
+  Settings,
+  History,
+  Images,           // ← FIXED: Replaced 'Media' with 'Images'
+  Clock,            // For OrderConfirmationQueue
 } from "lucide-react";
 
 const MENU = [
-  { name: "Dashboard",     path: "/admin",                 icon: LayoutDashboard, accent: "text-violet-500",  bg: "bg-violet-50"  },
-  { name: "Products",      path: "/admin/products",        icon: Package,         accent: "text-orange-500",  bg: "bg-orange-50"  },
-  { name: "Orders",        path: "/admin/orders",          icon: ShoppingCart,    accent: "text-blue-500",    bg: "bg-blue-50"    },
-  { name: "Order History", path: "/admin/order-history",   icon: History,         accent: "text-rose-500",    bg: "bg-rose-50"    },
-  { name: "Users",         path: "/admin/users",           icon: Users,           accent: "text-emerald-500", bg: "bg-emerald-50" },
+  { name: "Dashboard",              path: "/admin",                       icon: LayoutDashboard, accent: "text-violet-500",  bg: "bg-violet-50"  },
+  { name: "Products",               path: "/admin/products",              icon: Package,         accent: "text-orange-500",  bg: "bg-orange-50"  },
+  { name: "Confirmation Queue",     path: "/admin/confirmation-queue",    icon: Clock,           accent: "text-amber-500",   bg: "bg-amber-50"   },
+  { name: "Orders",                 path: "/admin/orders",                icon: ShoppingCart,    accent: "text-blue-500",    bg: "bg-blue-50"    },
+  { name: "Order History",          path: "/admin/order-history",         icon: History,         accent: "text-rose-500",    bg: "bg-rose-50"    },
+  { name: "Users",                  path: "/admin/users",                 icon: Users,           accent: "text-emerald-500", bg: "bg-emerald-50" },
+  { name: "Media",                  path: "/admin/media",                 icon: Images,          accent: "text-cyan-500",    bg: "bg-cyan-50"    },
 ];
 
-/* ── breadcrumb ─────────────────────────────────────── */
+{/* ── Breadcrumb Component ── */}
 function Breadcrumb() {
   const { pathname } = useLocation();
   const parts = pathname.split("/").filter(Boolean);
+
   return (
     <nav className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-gray-400">
       {parts.map((part, i) => (
         <span key={i} className="flex items-center gap-1.5">
           {i > 0 && <ChevronRight size={10} />}
-          <span className={i === parts.length - 1 ? "text-gray-700" : ""}>{part}</span>
+          <span className={i === parts.length - 1 ? "text-gray-700" : ""}>
+            {part}
+          </span>
         </span>
       ))}
     </nav>
   );
 }
 
-/* ── nav item ───────────────────────────────────────── */
+{/* ── Nav Item Component ── */}
 function NavItem({ item, active, onClick }) {
   const Icon = item.icon;
+
   return (
     <Link
       to={item.path}
@@ -43,8 +61,10 @@ function NavItem({ item, active, onClick }) {
           ? "bg-black text-white shadow-lg shadow-black/10"
           : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"}`}
     >
-      <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all
-        ${active ? "bg-white/15" : `${item.bg} ${item.accent}`}`}>
+      <div
+        className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all
+          ${active ? "bg-white/15" : `${item.bg} ${item.accent}`}`}
+      >
         <Icon size={16} className={active ? "text-white" : ""} />
       </div>
       <span className="truncate">{item.name}</span>
@@ -58,13 +78,14 @@ function NavItem({ item, active, onClick }) {
   );
 }
 
-/* ══ MAIN ═══════════════════════════════════════════════ */
+/* ══ MAIN ADMIN LAYOUT ═══════════════════════════════════════════════ */
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notifOpen,   setNotifOpen]   = useState(false);
-  const [scrolled,    setScrolled]    = useState(false);
-  const location  = useLocation();
-  const navigate  = useNavigate();
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path) =>
     path === "/admin"
@@ -73,15 +94,19 @@ const AdminLayout = () => {
 
   const currentPage = MENU.find((m) => isActive(m.path))?.name || "Admin";
 
+  // Close sidebar on route change (mobile)
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
 
+  // Scroll shadow for header
   useEffect(() => {
     const el = document.getElementById("admin-main");
     if (!el) return;
+
     const handler = () => setScrolled(el.scrollTop > 8);
     el.addEventListener("scroll", handler, { passive: true });
+
     return () => el.removeEventListener("scroll", handler);
   }, []);
 
@@ -92,7 +117,7 @@ const AdminLayout = () => {
     }
   };
 
-  /* ── sidebar content (shared between desktop + mobile) ── */
+  /* Sidebar Content (shared) */
   const SidebarContent = () => (
     <div className="h-full flex flex-col">
       {/* Logo */}
@@ -110,6 +135,7 @@ const AdminLayout = () => {
             </span>
           </div>
         </Link>
+
         <button
           onClick={() => setSidebarOpen(false)}
           className="lg:hidden p-1.5 rounded-xl hover:bg-gray-100 text-gray-500 transition"
@@ -118,12 +144,12 @@ const AdminLayout = () => {
         </button>
       </div>
 
-      {/* Section label */}
+      {/* Section Label */}
       <div className="px-6 mb-2">
         <p className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-400">Navigation</p>
       </div>
 
-      {/* Nav links */}
+      {/* Navigation Links */}
       <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
         {MENU.map((item) => (
           <NavItem
@@ -135,9 +161,8 @@ const AdminLayout = () => {
         ))}
       </nav>
 
-      {/* Bottom section */}
+      {/* Bottom Section */}
       <div className="p-4 space-y-2 border-t border-gray-100">
-        {/* View store */}
         <Link
           to="/"
           target="_blank"
@@ -149,7 +174,6 @@ const AdminLayout = () => {
           View Store
         </Link>
 
-        {/* Logout */}
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-red-500 hover:text-red-700 hover:bg-red-50 transition text-sm font-bold"
@@ -165,13 +189,12 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex overflow-hidden">
-
-      {/* ── DESKTOP SIDEBAR ──────────────────────────────── */}
+      {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 flex-shrink-0 bg-white border-r border-gray-100 h-screen sticky top-0">
         <SidebarContent />
       </aside>
 
-      {/* ── MOBILE SIDEBAR ───────────────────────────────── */}
+      {/* Mobile Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
           <>
@@ -195,15 +218,15 @@ const AdminLayout = () => {
         )}
       </AnimatePresence>
 
-      {/* ── MAIN CONTENT ─────────────────────────────────── */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
-        {/* Top header */}
-        <header className={`bg-white/90 backdrop-blur-md border-b border-gray-100 h-16 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 transition-shadow duration-200
-          ${scrolled ? "shadow-sm" : ""}`}>
-
+        {/* Top Header */}
+        <header
+          className={`bg-white/90 backdrop-blur-md border-b border-gray-100 h-16 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 transition-shadow duration-200
+            ${scrolled ? "shadow-sm" : ""}`}
+        >
           <div className="flex items-center gap-4">
-            {/* Mobile menu toggle */}
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2 rounded-xl hover:bg-gray-100 text-gray-600 transition"
@@ -211,7 +234,7 @@ const AdminLayout = () => {
               <Menu size={20} />
             </button>
 
-            {/* Page title + breadcrumb */}
+            {/* Breadcrumb + Title */}
             <div className="hidden sm:block">
               <Breadcrumb />
             </div>
@@ -220,10 +243,9 @@ const AdminLayout = () => {
             </h1>
           </div>
 
-          {/* Right actions */}
+          {/* Right Side Actions */}
           <div className="flex items-center gap-2">
-
-            {/* Notification bell */}
+            {/* Notifications */}
             <div className="relative">
               <button
                 onClick={() => setNotifOpen((v) => !v)}
@@ -245,14 +267,20 @@ const AdminLayout = () => {
                       className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-20"
                     >
                       <div className="px-4 py-3 border-b border-gray-50">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Notifications</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                          Notifications
+                        </p>
                       </div>
+
                       {[
-                        { text: "New order #1042 placed",    time: "2m ago",  dot: "bg-blue-500"    },
-                        { text: "Product stock running low", time: "14m ago", dot: "bg-amber-500"   },
-                        { text: "New user registered",       time: "1h ago",  dot: "bg-emerald-500" },
+                        { text: "New order #1042 placed", time: "2m ago", dot: "bg-blue-500" },
+                        { text: "Product stock running low", time: "14m ago", dot: "bg-amber-500" },
+                        { text: "New user registered", time: "1h ago", dot: "bg-emerald-500" },
                       ].map((n, i) => (
-                        <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition cursor-pointer border-b border-gray-50 last:border-0">
+                        <div
+                          key={i}
+                          className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition cursor-pointer border-b border-gray-50 last:border-0"
+                        >
                           <div className={`w-2 h-2 rounded-full ${n.dot} mt-1.5 flex-shrink-0`} />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-gray-800 leading-tight">{n.text}</p>
@@ -266,20 +294,24 @@ const AdminLayout = () => {
               </AnimatePresence>
             </div>
 
-            {/* Admin avatar */}
+            {/* Admin Profile */}
             <div className="flex items-center gap-2.5 pl-2 border-l border-gray-100 ml-1">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-black shadow-sm">
                 A
               </div>
               <div className="hidden sm:block">
-                <p className="text-[11px] font-black uppercase tracking-widest text-gray-800 leading-none">Admin</p>
-                <p className="text-[9px] font-bold text-gray-400 mt-0.5 uppercase tracking-widest">Super User</p>
+                <p className="text-[11px] font-black uppercase tracking-widest text-gray-800 leading-none">
+                  Admin
+                </p>
+                <p className="text-[9px] font-bold text-gray-400 mt-0.5 uppercase tracking-widest">
+                  Super User
+                </p>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Page content */}
+        {/* Page Content */}
         <main id="admin-main" className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>

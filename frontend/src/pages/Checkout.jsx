@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
+import { useLang } from "../context/LangContext";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,6 +8,7 @@ import toast from "react-hot-toast";
 
 // ── Custom Confirmation Modal ──────────────────────────────────────────────────
 function ConfirmModal({ onConfirm, onCancel }) {
+  const { t } = useLang();
   return (
     <AnimatePresence>
       <motion.div
@@ -35,10 +37,10 @@ function ConfirmModal({ onConfirm, onCancel }) {
           </div>
 
           <h3 className="text-xl font-black uppercase italic tracking-tight mb-2">
-            Confirm Order
+            {t("confirm")}
           </h3>
           <p className="text-gray-500 text-sm font-medium mb-8">
-            Ready to place your order? We'll start preparing it right away.
+            {t("placeOrder")}
           </p>
 
           <div className="flex gap-3">
@@ -46,13 +48,13 @@ function ConfirmModal({ onConfirm, onCancel }) {
               onClick={onCancel}
               className="flex-1 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-black uppercase tracking-widest text-xs hover:border-gray-400 transition-all"
             >
-              Cancel
+              {t("cancel")}
             </button>
             <button
               onClick={onConfirm}
               className="flex-1 py-3 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all"
             >
-              Place Order
+              {t("placeOrder")}
             </button>
           </div>
         </motion.div>
@@ -63,12 +65,13 @@ function ConfirmModal({ onConfirm, onCancel }) {
 
 // ── Checkout Page ──────────────────────────────────────────────────────────────
 function Checkout() {
+  const { t } = useLang();
   const { cart, cartTotal, clearCart } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false); // ← controls our modal
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -102,7 +105,6 @@ function Checkout() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Step 1: validate → show modal
   const handlePlaceOrder = (e) => {
     if (e) e.preventDefault();
     if (!formData.name || !formData.phone || !formData.address) {
@@ -110,14 +112,13 @@ function Checkout() {
       return;
     }
     if (loading || isSuccess) return;
-    setShowConfirm(true); // open our custom modal
+    setShowConfirm(true);
   };
 
-  // Step 2: user clicked "Place Order" inside the modal
   const handleConfirmed = async () => {
     setShowConfirm(false);
     setLoading(true);
-    const toastId = toast.loading("Processing your order...");
+    const toastId = toast.loading(t("loading"));
 
     try {
       const orderData = {
@@ -129,8 +130,8 @@ function Checkout() {
       const res = await API.post("orders/", orderData);
 
       if (res.status === 201 || res.status === 200) {
-        toast.success("Order confirmed!", { id: toastId });
-        clearCart(); // ← make sure CartContext's clearCart does NOT call window.confirm
+        toast.success(t("confirm"), { id: toastId });
+        clearCart();
         setIsSuccess(true);
         setTimeout(() => navigate("/"), 5000);
       } else {
@@ -138,13 +139,12 @@ function Checkout() {
       }
     } catch (err) {
       console.error("Order Error:", err);
-      const errorMessage = err.response?.data?.detail || "Failed to place order.";
+      const errorMessage = err.response?.data?.detail || t("error");
       toast.error(errorMessage, { id: toastId });
       setLoading(false);
     }
   };
 
-  // Step 3: user clicked "Cancel" — just close modal, do nothing
   const handleCancelled = () => {
     setShowConfirm(false);
   };
@@ -160,15 +160,17 @@ function Checkout() {
         >
           ✓
         </motion.div>
-        <h2 className="text-4xl font-black mb-4 uppercase italic">Order Placed!</h2>
+        <h2 className="text-4xl font-black mb-4 uppercase italic">
+          {t("confirm")}
+        </h2>
         <p className="text-gray-500 max-w-md mx-auto mb-8 font-medium">
-          Thank you for your purchase. We've received your details and are preparing your package.
+          {t("orderSummary")}
         </p>
         <button
           onClick={() => navigate("/")}
           className="bg-black text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all"
         >
-          Return to Shop
+          {t("continueShopping")}
         </button>
       </div>
     );
@@ -182,7 +184,6 @@ function Checkout() {
   // ── Main checkout ────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Custom modal renders on top of everything */}
       {showConfirm && (
         <ConfirmModal onConfirm={handleConfirmed} onCancel={handleCancelled} />
       )}
@@ -192,7 +193,7 @@ function Checkout() {
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
             <div className="mb-8">
               <h2 className="text-4xl font-black uppercase italic tracking-tighter">
-                Shipping<span className="text-orange-600">.</span>
+                {t("checkout")}<span className="text-orange-600">.</span>
               </h2>
             </div>
 
@@ -204,7 +205,7 @@ function Checkout() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    Full Name
+                    {t("fullName")}
                   </label>
                   <input
                     name="name"
@@ -216,7 +217,7 @@ function Checkout() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    Phone Number
+                    {t("phone")}
                   </label>
                   <input
                     name="phone"
@@ -230,7 +231,7 @@ function Checkout() {
 
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                  Delivery Address
+                  {t("address")}
                 </label>
                 <textarea
                   name="address"
@@ -244,7 +245,7 @@ function Checkout() {
               <div className="grid grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    City
+                    {t("city")}
                   </label>
                   <input
                     name="city"
@@ -256,7 +257,7 @@ function Checkout() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    ZIP Code
+                    {t("pinCode")}
                   </label>
                   <input
                     name="zip"
@@ -274,7 +275,7 @@ function Checkout() {
                 disabled={loading || fetchingProfile}
                 className="w-full bg-black text-white py-6 rounded-3xl font-black uppercase tracking-[0.2em] text-xs hover:bg-orange-600 transition-all shadow-xl disabled:bg-gray-400"
               >
-                {loading ? "Processing..." : "Confirm & Place Order"}
+                {loading ? t("loading") : t("placeOrder")}
               </button>
             </div>
           </motion.div>
@@ -283,7 +284,7 @@ function Checkout() {
           <div className="lg:pl-10">
             <div className="bg-gray-50 p-8 rounded-[3rem] border border-gray-100 sticky top-10">
               <h3 className="text-xl font-black uppercase italic mb-8 tracking-tight">
-                Your Selection
+                {t("orderSummary")}
               </h3>
               <div className="space-y-6 max-h-[400px] overflow-y-auto no-scrollbar pr-2">
                 {cart.map((item) => (
@@ -305,7 +306,7 @@ function Checkout() {
                         {item.name}
                       </h4>
                       <p className="text-[10px] font-bold text-orange-600 uppercase">
-                        Qty: {item.quantity}
+                        {t("quantity")}: {item.quantity}
                       </p>
                     </div>
                     <p className="font-black text-sm italic">₹{item.price * item.quantity}</p>
@@ -315,7 +316,7 @@ function Checkout() {
               <div className="mt-10 pt-8 border-t border-gray-200 space-y-4">
                 <div className="flex justify-between items-end">
                   <span className="font-black text-gray-400 uppercase tracking-widest text-[10px]">
-                    Total Amount
+                    {t("price")}
                   </span>
                   <span className="text-4xl font-black text-gray-900 leading-none italic tracking-tighter">
                     ₹{cartTotal}

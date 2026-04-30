@@ -182,3 +182,37 @@ class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
 class ProductImageDeleteView(generics.DestroyAPIView):
     queryset = ProductImage.objects.all()
     permission_classes = [permissions.IsAdminUser]
+
+# ── Slides (already perfect) ─────────────────────────────────────────────
+class AdminSlideListCreateView(generics.ListCreateAPIView):
+    serializer_class   = SlideSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset           = Slide.objects.all().order_by("order")
+
+
+class AdminSlideDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class   = SlideSerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset           = Slide.objects.all()
+
+
+# ── Categories — NOW FULL CRUD ───────────────────────────────────────────
+class AdminCategoryListCreateView(generics.ListCreateAPIView):
+    """
+    GET  /admin/categories/   → list all
+    POST /admin/categories/   → create new (name + optional image)
+    """
+    serializer_class   = CategorySerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset           = Category.objects.all().order_by("name")
+
+
+class AdminCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    GET    /admin/categories/<id>/   → fetch
+    PATCH  /admin/categories/<id>/   → update name + image
+    DELETE /admin/categories/<id>/   → delete
+    """
+    serializer_class   = CategorySerializer
+    permission_classes = [permissions.IsAdminUser]
+    queryset           = Category.objects.all()

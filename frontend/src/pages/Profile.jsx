@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLang } from "../context/LangContext";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import {
@@ -56,8 +57,9 @@ const STATUS_CONFIG = {
 
 const PROGRESS_STEPS = ["Pending", "Shipped", "Delivered"];
 
-/* ── Custom Cancel Confirmation Modal ────────────────────────────────────── */
+/* ── Cancel Confirmation Modal ───────────────────────────────────────────── */
 function CancelModal({ orderId, onConfirm, onClose }) {
+  const { t } = useLang();
   return (
     <AnimatePresence>
       <motion.div
@@ -66,13 +68,7 @@ function CancelModal({ orderId, onConfirm, onClose }) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        {/* Backdrop */}
-        <div
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-          onClick={onClose}
-        />
-
-        {/* Card */}
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
         <motion.div
           className="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm mx-4 text-center"
           initial={{ scale: 0.85, opacity: 0, y: 20 }}
@@ -80,34 +76,28 @@ function CancelModal({ orderId, onConfirm, onClose }) {
           exit={{ scale: 0.85, opacity: 0, y: 20 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
-          {/* Icon */}
           <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-5">
             <XCircle size={32} />
           </div>
-
-          <h3 className="text-xl font-black uppercase italic tracking-tight mb-2">
-            Cancel Order?
-          </h3>
+          <h3 className="text-xl font-black uppercase italic tracking-tight mb-2">{t("confirm")}</h3>
           <p className="text-gray-500 text-sm font-medium mb-2">
-            You're requesting cancellation for{" "}
-            <span className="font-black text-gray-800">Order #{orderId}</span>.
+            {t("cancel")} Order #{orderId}?
           </p>
           <p className="text-gray-400 text-xs font-bold mb-8">
-            This will be sent to admin for confirmation.
+            {t("loading")}
           </p>
-
           <div className="flex gap-3">
             <button
               onClick={onClose}
               className="flex-1 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-black uppercase tracking-widest text-xs hover:border-gray-400 transition-all"
             >
-              Go Back
+              {t("back")}
             </button>
             <button
               onClick={() => onConfirm(orderId)}
               className="flex-1 py-3 rounded-2xl bg-red-600 text-white font-black uppercase tracking-widest text-xs hover:bg-red-700 transition-all"
             >
-              Yes, Cancel
+              {t("cancel")}
             </button>
           </div>
         </motion.div>
@@ -137,15 +127,15 @@ function OrderProgress({ status }) {
   return (
     <div className="flex items-center gap-0 mt-4">
       {PROGRESS_STEPS.map((step, i) => {
-        const done     = i <= currentStep;
-        const active   = i === currentStep;
-        const StepCfg  = STATUS_CONFIG[step];
+        const done    = i <= currentStep;
+        const active  = i === currentStep;
+        const StepCfg = STATUS_CONFIG[step];
         const StepIcon = StepCfg.icon;
         return (
           <div key={step} className="flex items-center flex-1 last:flex-none">
             <div className={`flex flex-col items-center gap-1 ${i < PROGRESS_STEPS.length - 1 ? "flex-1" : ""}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all
-                ${done ? "bg-black border-black text-white" : "bg-gray-50 border-gray-200 text-gray-300"}
+                ${done  ? "bg-black border-black text-white" : "bg-gray-50 border-gray-200 text-gray-300"}
                 ${active ? "ring-4 ring-black/10" : ""}`}>
                 <StepIcon size={14} />
               </div>
@@ -165,9 +155,10 @@ function OrderProgress({ status }) {
 
 /* ── Single order card ───────────────────────────────────────────────────── */
 function OrderCard({ order, onCancelRequest, onReorder }) {
+  const { t } = useLang();
   const [expanded, setExpanded] = useState(false);
   const date = new Date(order.created_at).toLocaleDateString("en-IN", {
-    day: "numeric", month: "short", year: "numeric"
+    day: "numeric", month: "short", year: "numeric",
   });
 
   const canCancel  = order.status === "Pending";
@@ -180,7 +171,6 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
       animate={{ opacity: 1, y: 0 }}
       className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:border-gray-200 hover:shadow-md transition-all"
     >
-      {/* Header row */}
       <div
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 cursor-pointer"
         onClick={() => setExpanded((v) => !v)}
@@ -196,7 +186,6 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{date}</p>
           </div>
         </div>
-
         <div className="flex items-center gap-4 ml-16 sm:ml-0">
           <StatusBadge status={order.status} />
           <span className="font-black text-gray-900">₹{order.total_price}</span>
@@ -207,7 +196,6 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
         </div>
       </div>
 
-      {/* Expanded details */}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -218,7 +206,6 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
             className="overflow-hidden"
           >
             <div className="px-6 pb-6 space-y-6 border-t border-gray-50 pt-5">
-
               <OrderProgress status={order.status} />
 
               {(order.status === "Cancelled" || order.status === "Cancellation Requested") && (
@@ -229,31 +216,31 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
                   <AlertCircle size={16} className="flex-shrink-0" />
                   <p className="text-[11px] font-black uppercase tracking-widest">
                     {order.status === "Cancelled"
-                      ? "This order has been cancelled."
-                      : "Cancellation requested — awaiting admin confirmation."}
+                      ? t("cancel")
+                      : t("loading")}
                   </p>
                 </div>
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-gray-50 rounded-2xl p-4 space-y-1">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Deliver To</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{t("address")}</p>
                   <p className="font-black text-gray-900 text-sm">{order.name}</p>
                   <p className="text-xs text-gray-500 font-bold">{order.address}, {order.city}</p>
                   <p className="text-xs text-gray-500 font-bold">{order.phone}</p>
                 </div>
                 <div className="bg-gray-50 rounded-2xl p-4 space-y-1">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Order Summary</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{t("orderSummary")}</p>
                   <p className="font-black text-gray-900 text-sm">
                     {order.items?.length} {order.items?.length === 1 ? "product" : "products"}
                   </p>
-                  <p className="text-xs text-gray-500 font-bold">Total: ₹{order.total_price}</p>
+                  <p className="text-xs text-gray-500 font-bold">{t("price")}: ₹{order.total_price}</p>
                 </div>
               </div>
 
               {order.items && order.items.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-3">Items</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-3">{t("products")}</p>
                   {order.items.map((item, i) => (
                     <div key={i} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
                       <div className="flex items-center gap-3">
@@ -270,14 +257,13 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
                 </div>
               )}
 
-              {/* Action buttons */}
               <div className="flex flex-wrap gap-3 pt-2">
                 {canCancel && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onCancelRequest(order.id); }}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-red-200 text-red-600 bg-red-50 hover:bg-red-600 hover:text-white font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"
                   >
-                    <XCircle size={13} /> Request Cancellation
+                    <XCircle size={13} /> {t("cancel")}
                   </button>
                 )}
                 {canReorder && (
@@ -285,7 +271,7 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
                     onClick={(e) => { e.stopPropagation(); onReorder(order.id); }}
                     className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 text-gray-700 bg-gray-50 hover:bg-black hover:text-white hover:border-black font-black uppercase text-[10px] tracking-widest transition-all active:scale-95"
                   >
-                    <RefreshCcw size={13} /> Reorder
+                    <RefreshCcw size={13} /> {t("refresh")}
                   </button>
                 )}
               </div>
@@ -297,19 +283,47 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
   );
 }
 
+/* ── helper: map raw API response → profile state ──────────────────────────
+   API returns first_name / last_name (and optionally name via SerializerMethodField).
+   We combine them into a single "name" string for the form.
+──────────────────────────────────────────────────────────────────────────── */
+function buildProfileState(data) {
+  const fullName =
+    (data.name && data.name.trim())                                          ||
+    [data.first_name, data.last_name].filter(Boolean).join(" ").trim()      ||
+    data.username                                                             ||
+    "";
+
+  return {
+    name:    fullName,
+    email:   data.email   || "",
+    image:   data.image   || null,
+    phone:   data.phone   || "",
+    address: data.address || "",
+    city:    data.city    || "",
+  };
+}
+
+/* ── helper: keep localStorage in sync so Navbar reflects changes ────────── */
+function syncToStorage(data) {
+  if (data.name)  localStorage.setItem("user_name",  data.name);
+  if (data.email) localStorage.setItem("user_email", data.email);
+}
+
 /* ══ MAIN COMPONENT ══════════════════════════════════════════════════════════ */
 function Profile() {
-  const navigate  = useNavigate();
+  const { t } = useLang();
+  const navigate = useNavigate();
   const [activeTab,     setActiveTab]     = useState("orders");
   const [profile,       setProfile]       = useState({
     name: "", email: "", image: null,
-    phone: "", address: "", city: ""
+    phone: "", address: "", city: "",
   });
   const [preview,       setPreview]       = useState(null);
   const [orders,        setOrders]        = useState([]);
   const [loading,       setLoading]       = useState(true);
   const [updating,      setUpdating]      = useState(false);
-  const [cancelOrderId, setCancelOrderId] = useState(null); // ← drives modal
+  const [cancelOrderId, setCancelOrderId] = useState(null);
   const fileInputRef = useRef();
 
   useEffect(() => { fetchInitialData(); }, []);
@@ -321,17 +335,12 @@ function Profile() {
         API.get("profile/"),
         API.get("orders/"),
       ]);
-      setProfile({
-        name:    profRes.data.name    || "",
-        email:   profRes.data.email   || "",
-        image:   profRes.data.image   || null,
-        phone:   profRes.data.phone   || "",
-        address: profRes.data.address || "",
-        city:    profRes.data.city    || "",
-      });
+      const profileData = buildProfileState(profRes.data);
+      setProfile(profileData);
+      syncToStorage(profileData);
       setOrders(ordRes.data || []);
     } catch {
-      toast.error("Failed to load profile");
+      toast.error(t("error"));
     } finally {
       setLoading(false);
     }
@@ -340,7 +349,7 @@ function Profile() {
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setUpdating(true);
-    const t = toast.loading("Updating identity...");
+    const toastId = toast.loading(t("loading"));
 
     const formData = new FormData();
     formData.append("name",    profile.name);
@@ -355,55 +364,45 @@ function Profile() {
       const res = await API.patch("profile/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setProfile({
-        name:    res.data.name,
-        email:   res.data.email,
-        image:   res.data.image,
-        phone:   res.data.phone,
-        address: res.data.address,
-        city:    res.data.city,
-      });
-      toast.success("Identity updated!", { id: t });
+      const updatedProfile = buildProfileState(res.data);
+      setProfile(updatedProfile);
+      syncToStorage(updatedProfile);
+      toast.success(t("save"), { id: toastId });
       setPreview(null);
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Update failed", { id: t });
+      toast.error(err.response?.data?.detail || t("error"), { id: toastId });
     } finally {
       setUpdating(false);
     }
   };
 
-  // Step 1: open modal — just store which order was clicked
-  const handleCancelRequest = (orderId) => {
-    setCancelOrderId(orderId);
-  };
+  const handleCancelRequest   = (orderId) => setCancelOrderId(orderId);
 
-  // Step 2: user confirmed inside modal — now do the API call
   const handleCancelConfirmed = async (orderId) => {
     setCancelOrderId(null);
     try {
       const res = await API.patch(`orders/${orderId}/`, { status: "Cancelled" });
       setOrders((prev) => prev.map((o) => (o.id === orderId ? res.data : o)));
-      toast.success("Cancellation requested");
+      toast.success(t("cancel"));
     } catch {
-      toast.error("Could not request cancellation");
+      toast.error(t("error"));
     }
   };
 
   const handleReorder = async (orderId) => {
-    const t = toast.loading("Placing reorder...");
+    const toastId = toast.loading(t("loading"));
     try {
       const res = await API.post(`orders/${orderId}/reorder/`);
       setOrders((prev) => prev.map((o) => (o.id === orderId ? res.data : o)));
-      toast.success("Order reactivated!", { id: t });
+      toast.success(t("confirm"), { id: toastId });
     } catch (err) {
-      toast.error(err.response?.data?.error || "Reorder failed", { id: t });
+      toast.error(err.response?.data?.error || t("error"), { id: toastId });
     }
   };
 
   return (
     <div className="min-h-screen bg-white text-black selection:bg-black selection:text-white">
 
-      {/* ── Custom cancel modal (renders above everything) ── */}
       {cancelOrderId && (
         <CancelModal
           orderId={cancelOrderId}
@@ -421,7 +420,7 @@ function Profile() {
               Member<span className="text-orange-600">.</span>
             </h1>
             <p className="mt-4 text-gray-500 font-medium uppercase tracking-[0.3em] text-[10px]">
-              {profile.email ? `Exclusive Access — ${profile.email}` : "Loading Profile..."}
+              {profile.email ? `Exclusive Access — ${profile.email}` : t("loading")}
             </p>
           </div>
 
@@ -431,7 +430,7 @@ function Profile() {
               className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
                 ${activeTab === "orders" ? "bg-white shadow-sm text-black" : "text-gray-400 hover:text-black"}`}
             >
-              <ShoppingBag size={14} /> Orders
+              <ShoppingBag size={14} /> {t("myOrders")}
               {orders.length > 0 && (
                 <span className="bg-orange-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full ml-0.5">
                   {orders.length}
@@ -443,7 +442,7 @@ function Profile() {
               className={`flex items-center gap-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
                 ${activeTab === "settings" ? "bg-white shadow-sm text-black" : "text-gray-400 hover:text-black"}`}
             >
-              <Settings size={14} /> Settings
+              <Settings size={14} /> {t("settings")}
             </button>
           </div>
         </header>
@@ -478,14 +477,14 @@ function Profile() {
                         <PackageSearch size={32} className="text-gray-200" />
                       </div>
                       <div>
-                        <p className="text-xl font-black uppercase italic tracking-tighter text-gray-800 mb-2">No Orders Yet</p>
-                        <p className="text-gray-400 font-bold text-sm">Start shopping to see your orders here.</p>
+                        <p className="text-xl font-black uppercase italic tracking-tighter text-gray-800 mb-2">{t("noData")}</p>
+                        <p className="text-gray-400 font-bold text-sm">{t("tryOther")}</p>
                       </div>
                       <button
                         onClick={() => navigate("/shop")}
                         className="flex items-center gap-2 bg-black text-white px-7 py-3.5 rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-orange-600 transition-all mt-2"
                       >
-                        <ShoppingBag size={13} /> Browse Products
+                        <ShoppingBag size={13} /> {t("shopAll")}
                       </button>
                     </motion.div>
                   ) : (
@@ -518,9 +517,14 @@ function Profile() {
                         <div className="w-48 h-48 rounded-full overflow-hidden border-8 border-gray-50 shadow-2xl bg-gray-100 transition-transform group-hover:scale-[1.02] duration-500">
                           {preview || profile.image ? (
                             <img
-                              src={preview || (profile.image?.startsWith("http") ? profile.image : `http://127.0.0.1:8000${profile.image}`)}
+                              src={
+                                preview ||
+                                (profile.image?.startsWith("http")
+                                  ? profile.image
+                                  : `http://127.0.0.1:8000${profile.image}`)
+                              }
                               className="w-full h-full object-cover"
-                              alt="Profile"
+                              alt={t("profile")}
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-300 bg-gray-50">
@@ -532,6 +536,7 @@ function Profile() {
                           type="button"
                           onClick={() => fileInputRef.current.click()}
                           className="absolute bottom-2 right-2 p-4 bg-black text-white rounded-full hover:bg-orange-600 transition-colors shadow-2xl"
+                          aria-label={t("edit")}
                         >
                           <Camera size={20} />
                         </button>
@@ -544,20 +549,25 @@ function Profile() {
 
                     {/* Form fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                      {/* Visible Name */}
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Visible Name</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">
+                          {t("fullName")}
+                        </label>
                         <div className="relative group">
                           <User className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-black transition-colors" size={18} />
                           <input
                             className="w-full pl-14 pr-6 py-5 rounded-3xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:border-black outline-none transition-all font-bold text-sm"
                             value={profile.name}
+                            placeholder={t("fullName")}
                             onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                           />
                         </div>
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Phone Number</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t("phone")}</label>
                         <div className="relative group">
                           <Phone className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-black transition-colors" size={18} />
                           <input
@@ -570,7 +580,7 @@ function Profile() {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">City</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t("city")}</label>
                         <div className="relative group">
                           <Building2 className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-black transition-colors" size={18} />
                           <input
@@ -582,7 +592,7 @@ function Profile() {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Account Email</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t("emailAddress")}</label>
                         <div className="relative opacity-50">
                           <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
                           <input
@@ -595,7 +605,7 @@ function Profile() {
                     </div>
 
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Full Address</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">{t("address")}</label>
                       <div className="relative group">
                         <MapPin className="absolute left-5 top-7 text-gray-300 group-focus-within:text-black transition-colors" size={18} />
                         <textarea
@@ -603,7 +613,7 @@ function Profile() {
                           className="w-full pl-14 pr-6 py-5 rounded-3xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:border-black outline-none transition-all font-bold text-sm resize-none"
                           value={profile.address}
                           onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-                          placeholder="House No, Street name..."
+                          placeholder={t("address")}
                         />
                       </div>
                     </div>
@@ -613,7 +623,7 @@ function Profile() {
                         disabled={updating}
                         className="w-full md:w-auto px-16 bg-black text-white py-5 rounded-3xl font-black uppercase text-xs tracking-[0.2em] hover:bg-orange-600 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
                       >
-                        {updating ? "Syncing..." : "Update Identity"}
+                        {updating ? t("loading") : t("save")}
                       </button>
                     </div>
                   </form>

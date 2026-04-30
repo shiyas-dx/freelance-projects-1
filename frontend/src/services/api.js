@@ -1,8 +1,7 @@
 import axios from "axios";
 
-// Your API base remains the same for requests, 
-// but we no longer use a prefix for images.
-const BASE_URL = "http://127.0.0.1:8001"; 
+// Updated to localhost to match your Django Site domain configuration
+const BASE_URL = "http://localhost:8000"; 
 
 const API = axios.create({
   baseURL: `${BASE_URL}/api/`,

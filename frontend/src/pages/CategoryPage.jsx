@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
+import { useLang } from "../context/LangContext";
 import API from "../services/api";
 import ProductCard from "../components/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,7 +35,6 @@ function sortProducts(products, sort) {
 /* ── Pagination ─────────────────────────────────── */
 function Pagination({ current, total, onChange }) {
   const pages = Array.from({ length: total }, (_, i) => i + 1);
-  // Show at most 5 page buttons around current
   const visible = pages.filter(
     (p) => p === 1 || p === total || Math.abs(p - current) <= 1
   );
@@ -87,6 +87,7 @@ function Pagination({ current, total, onChange }) {
 
 /* ── Main ───────────────────────────────────────── */
 function CategoryPage() {
+  const { t } = useLang();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -100,23 +101,23 @@ function CategoryPage() {
 
   const topRef = useRef(null);
 
-useEffect(() => {
-  if (!id) return;
+  useEffect(() => {
+    if (!id) return;
 
-  setLoading(true);
-  setCurrentPage(1);
-  
-  Promise.all([
-    API.get(`products/?category=${id}`),
-    API.get(`categories/${id}/`).catch(() => ({ data: null })),
-  ])
-    .then(([prodRes, catRes]) => {
-      setProducts(prodRes.data);
-      setCategory(catRes.data);
-    })
-    .catch(console.error)
-    .finally(() => setLoading(false));
-}, [id]);
+    setLoading(true);
+    setCurrentPage(1);
+    
+    Promise.all([
+      API.get(`products/?category=${id}`),
+      API.get(`categories/${id}/`).catch(() => ({ data: null })),
+    ])
+      .then(([prodRes, catRes]) => {
+        setProducts(prodRes.data);
+        setCategory(catRes.data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [id]);
 
   const sorted = sortProducts(products, sort);
   const totalPages = Math.ceil(sorted.length / PRODUCTS_PER_PAGE);
@@ -130,11 +131,9 @@ useEffect(() => {
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        {/* Hero skeleton */}
         <div className="h-52 md:h-72 bg-gray-100 animate-pulse" />
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
@@ -161,13 +160,12 @@ useEffect(() => {
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
 
-        {/* Back button */}
         <button
           onClick={() => navigate(-1)}
           className="absolute top-6 left-6 flex items-center gap-2 text-white/70 hover:text-white text-[10px] font-black uppercase tracking-widest transition group"
         >
           <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
-          Back
+          {t("back")}
         </button>
 
         <div className="absolute inset-0 flex flex-col justify-end px-8 md:px-16 pb-10 max-w-7xl mx-auto left-0 right-0">
@@ -179,11 +177,11 @@ useEffect(() => {
             <div className="flex items-center gap-2 mb-3">
               <span className="w-5 h-[2px] bg-orange-500" />
               <span className="text-orange-400 font-black uppercase text-[10px] tracking-[0.35em]">
-                Collection
+                {t("categories")}
               </span>
             </div>
             <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white leading-none capitalize">
-              {category?.name || "Category"}
+              {category?.name || t("categories")}
             </h1>
             <p className="text-gray-400 font-bold text-sm mt-3">
               {products.length} {products.length === 1 ? "product" : "products"}
@@ -196,11 +194,10 @@ useEffect(() => {
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
 
-          {/* Left: result count */}
           <p className="text-[11px] font-black uppercase tracking-widest text-gray-400 hidden sm:block">
             {products.length > 0
               ? `Showing ${(currentPage - 1) * PRODUCTS_PER_PAGE + 1}–${Math.min(currentPage * PRODUCTS_PER_PAGE, sorted.length)} of ${sorted.length}`
-              : "No products"}
+              : t("noData")}
           </p>
 
           <div className="flex items-center gap-3 ml-auto">
@@ -278,17 +275,17 @@ useEffect(() => {
             </div>
             <div className="text-center">
               <p className="text-xl font-black uppercase italic tracking-tighter text-gray-800 mb-2">
-                Nothing here yet
+                {t("noData")}
               </p>
               <p className="text-gray-400 font-bold text-sm">
-                This category doesn't have any products yet.
+                {t("tryOther")}
               </p>
             </div>
             <button
               onClick={() => navigate("/shop")}
               className="flex items-center gap-2 bg-black text-white px-7 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all mt-2"
             >
-              Browse All Products <ArrowRight size={12} />
+              {t("shopAll")} <ArrowRight size={12} />
             </button>
           </motion.div>
         )}
@@ -339,14 +336,14 @@ useEffect(() => {
                 disabled={currentPage === 1}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 text-gray-700 hover:bg-black hover:text-white hover:border-black disabled:opacity-30 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all"
               >
-                <ArrowLeft size={12} /> Prev
+                <ArrowLeft size={12} /> {t("previous")}
               </button>
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-30 disabled:cursor-not-allowed text-[10px] font-black uppercase tracking-widest transition-all"
               >
-                Next <ArrowRight size={12} />
+                {t("next")} <ArrowRight size={12} />
               </button>
             </div>
           </div>

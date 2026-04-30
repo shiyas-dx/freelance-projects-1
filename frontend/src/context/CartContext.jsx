@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { IMAGE_BASE } from "../services/api";
+// Removed IMAGE_BASE from here
+import API from "../services/api"; 
 
 const CartContext = createContext();
 
@@ -17,9 +18,6 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("luxe_cart", JSON.stringify(cart));
   }, [cart]);
 
-  // ── FIX: now accepts qty (defaults to 1) ─────────────────────────────────
-  // If the product already exists → quantity increases by qty (not just by 1)
-  // If it's new → starts at qty instead of always 1
   const addToCart = (product, qty = 1) => {
     const token = localStorage.getItem("access_token");
     if (!token) return false;
@@ -29,11 +27,11 @@ export const CartProvider = ({ children }) => {
       if (exists) {
         return prev.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + qty }  // ← was + 1
+            ? { ...item, quantity: item.quantity + qty }
             : item
         );
       }
-      return [...prev, { ...product, quantity: qty }];    // ← was quantity: 1
+      return [...prev, { ...product, quantity: qty }];
     });
 
     setLastAdded({ ...product, addedQty: qty });
@@ -55,7 +53,6 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  // ✅ Removed window.confirm — confirmation is handled by Checkout modal
   const clearCart = () => {
     setCart([]);
   };
@@ -63,9 +60,10 @@ export const CartProvider = ({ children }) => {
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
   const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
+  // UPDATED: Now simply returns the image string directly from Cloudinary
   const getToastImage = (img) => {
-    if (!img) return "";
-    return img.startsWith("http") ? img : `${IMAGE_BASE}${img}`;
+    if (!img) return "https://placehold.co/100x100?text=LUXE";
+    return img; 
   };
 
   return (

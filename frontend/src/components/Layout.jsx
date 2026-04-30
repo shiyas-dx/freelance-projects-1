@@ -11,7 +11,7 @@ function Layout() {
         <Outlet /> 
       </main>
       <footer className="bg-white border-t border-gray-100 py-8 text-center text-gray-400 text-sm">
-        © 2026 Trendzefy. All rights reserved.
+        © 2026 LUXE. All rights reserved.
       </footer>
     </div>
   );

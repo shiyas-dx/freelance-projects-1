@@ -2,7 +2,11 @@ import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Lenis from "lenis";
 import { CartProvider } from "./context/CartContext";
+import { LangProvider } from "./context/LangContext";   // ← NEW
 import Layout from "./components/Layout";
+
+// Google OAuth
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 // Client Pages
 import Home from "./pages/Home";
@@ -16,6 +20,7 @@ import Profile from "./pages/Profile";
 import ShopPage from "./pages/ShopPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import PasswordResetConfirm from "./pages/PasswordResetConfirm";
+import VerifyOTP from "./pages/VerifyOTP";
 
 // Admin Pages
 import AdminLayout from "./admin/AdminLayout";
@@ -24,8 +29,13 @@ import ProductManagement from "./admin/ProductManagement";
 import OrderManagement from "./admin/OrderManagement";
 import OrderHistory from "./admin/OrderHistory";
 import UserManagement from "./admin/UserManagement";
+import MediaManagement from "./admin/MediaManagement";
+import OrderConfirmationQueue from "./admin/OrderConfirmationQueue";
 
 import { Toaster } from "react-hot-toast";
+import VerifyResetOTP from "./pages/VerifyResetOTP";
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const ScrollManager = () => {
   const { pathname } = useLocation();
@@ -35,12 +45,10 @@ const ScrollManager = () => {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+    const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
     const requestID = requestAnimationFrame(raf);
     lenis.scrollTo(0, { immediate: true });
+
     return () => {
       cancelAnimationFrame(requestID);
       lenis.destroy();
@@ -62,44 +70,51 @@ const AdminRoute = ({ children }) => {
 
 function App() {
   return (
-    <CartProvider>
-      <BrowserRouter>
-        <ScrollManager />
-        <Toaster position="bottom-center" />
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <LangProvider>                    {/* ← WRAP HERE */}
+        <CartProvider>
+          <BrowserRouter>
+            <ScrollManager />
+            <Toaster position="bottom-center" />
 
-        <Routes>
-          {/* ── 1. AUTH PAGES (Standalone - No Navbar) ── */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/password-reset-confirm/:uid/:token" element={<PasswordResetConfirm />} />
+            <Routes>
+              {/* Auth Pages (No Layout) */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/verify-otp" element={<VerifyOTP />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/verify-reset-otp" element={<VerifyResetOTP />} />
+              <Route path="/new-password" element={<PasswordResetConfirm />} />
 
-          {/* ── 2. ADMIN PANEL (Isolated) ── */}
-          <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-            <Route index element={<Dashboard />} />
-            <Route path="products" element={<ProductManagement />} />
-            <Route path="products/:id" element={<ProductDetail />} />
-            <Route path="orders" element={<OrderManagement />} />
-            <Route path="order-history" element={<OrderHistory />} />
-            <Route path="users" element={<UserManagement />} />
-          </Route>
+              {/* Admin Panel */}
+              <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+                <Route index element={<Dashboard />} />
+                <Route path="products" element={<ProductManagement />} />
+                <Route path="products/:id" element={<ProductDetail />} />
+                <Route path="confirmation-queue" element={<OrderConfirmationQueue />} />
+                <Route path="orders" element={<OrderManagement />} />
+                <Route path="order-history" element={<OrderHistory />} />
+                <Route path="users" element={<UserManagement />} />
+                <Route path="media" element={<MediaManagement />} />
+              </Route>
 
-          {/* ── 3. CLIENT WEBSITE (Wrapped in Layout with Navbar/Footer) ── */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="shop" element={<ShopPage />} />
-            <Route path="product/:id" element={<ProductDetail />} />
-            <Route path="category/:id" element={<CategoryPage />} />
-            <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-            <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-            <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          </Route>
+              {/* Main Client Site with Layout (Navbar + Footer) */}
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="shop" element={<ShopPage />} />
+                <Route path="product/:id" element={<ProductDetail />} />
+                <Route path="category/:id" element={<CategoryPage />} />
+                <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+                <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+                <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              </Route>
 
-          {/* Fallback for 404s */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </CartProvider>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
+      </LangProvider>
+    </GoogleOAuthProvider>
   );
 }
 

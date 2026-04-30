@@ -1,6 +1,6 @@
 import { useCart } from "../context/CartContext";
+import { useLang } from "../context/LangContext";
 import { Link, useNavigate } from "react-router-dom";
-import { IMAGE_BASE } from "../services/api";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Minus, X, ShoppingBag, ArrowRight, Tag,
@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 
 const VALID_CODES = { LUXE10: 10, SAVE20: 20, FIRST15: 15 };
+const IMAGE_BASE = "http://127.0.0.1:8000";
 
 function TrustItem({ icon: Icon, text }) {
   return (
@@ -20,6 +21,7 @@ function TrustItem({ icon: Icon, text }) {
 }
 
 function EmptyCart() {
+  const { t } = useLang();
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -39,16 +41,16 @@ function EmptyCart() {
         </motion.div>
       </div>
       <h2 className="text-4xl font-black uppercase italic tracking-tighter text-gray-900 mb-3">
-        Your Bag is Empty
+        {t("emptyCart")}
       </h2>
       <p className="text-gray-400 font-bold text-sm max-w-xs leading-relaxed mb-10">
-        Looks like you haven't added anything yet. Explore our latest collection.
+        {t("noData")}
       </p>
       <Link
         to="/shop"
         className="group flex items-center gap-3 bg-black text-white px-10 py-4 rounded-full font-black uppercase text-[11px] tracking-widest hover:bg-orange-600 transition-all shadow-xl active:scale-95"
       >
-        Start Shopping
+        {t("continueShopping")}
         <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
       </Link>
     </motion.div>
@@ -56,6 +58,7 @@ function EmptyCart() {
 }
 
 function Cart() {
+  const { t } = useLang();
   const { cart, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
   const navigate = useNavigate();
 
@@ -106,7 +109,7 @@ function Cart() {
             </button>
             <div>
               <h1 className="text-3xl font-black uppercase italic tracking-tighter text-gray-900 leading-none">
-                Shopping Bag
+                {t("yourCart")}
               </h1>
               <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
                 {cart.length} {cart.length === 1 ? "item" : "items"} ·{" "}
@@ -119,7 +122,7 @@ function Cart() {
             className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-red-500 transition-colors group"
           >
             <Trash2 size={12} className="group-hover:text-red-500 transition-colors" />
-            Clear All
+            {t("clear")}
           </button>
         </div>
       </div>
@@ -180,7 +183,7 @@ function Cart() {
                             Size: Standard
                           </span>
                           <span className="text-[9px] font-black uppercase tracking-widest text-green-600 bg-green-50 border border-green-100 px-2.5 py-1 rounded-full">
-                            Free Shipping
+                            {t("freeShipping")}
                           </span>
                         </div>
                       </div>
@@ -206,7 +209,7 @@ function Cart() {
                         </div>
 
                         <div className="text-right">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">Subtotal</p>
+                          <p className="text-[9px] font-black uppercase tracking-widest text-gray-400">{t("subtotal")}</p>
                           <motion.p
                             key={item.quantity}
                             initial={{ opacity: 0, y: -4 }}
@@ -228,7 +231,7 @@ function Cart() {
               className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors mt-2 group"
             >
               <ArrowLeft size={12} className="group-hover:-translate-x-0.5 transition-transform" />
-              Continue Shopping
+              {t("continueShopping")}
             </Link>
           </div>
 
@@ -237,9 +240,9 @@ function Cart() {
             <div className="bg-[#0a0a0a] text-white rounded-3xl overflow-hidden sticky top-24 shadow-2xl">
 
               <div className="px-7 pt-7 pb-5 border-b border-white/10">
-                <h2 className="text-xl font-black uppercase italic tracking-tighter">Order Summary</h2>
+                <h2 className="text-xl font-black uppercase italic tracking-tighter">{t("orderSummary")}</h2>
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">
-                  {cart.length} {cart.length === 1 ? "item" : "items"} · Free shipping
+                  {cart.length} {cart.length === 1 ? "item" : "items"} · {t("freeShipping")}
                 </p>
               </div>
 
@@ -296,7 +299,7 @@ function Cart() {
                         onClick={handlePromo}
                         className="bg-orange-600 hover:bg-orange-500 text-white px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
                       >
-                        Apply
+                        {t("confirm")}
                       </button>
                     </div>
                   )}
@@ -308,12 +311,12 @@ function Cart() {
                 {/* Totals */}
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500 font-bold">Subtotal</span>
+                    <span className="text-gray-500 font-bold">{t("subtotal")}</span>
                     <span className="text-white font-black">₹{cartTotal}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500 font-bold">Shipping</span>
-                    <span className="text-green-400 font-black text-[10px] uppercase tracking-widest">Free</span>
+                    <span className="text-green-400 font-black text-[10px] uppercase tracking-widest">{t("freeShipping")}</span>
                   </div>
                   {appliedCode && (
                     <motion.div
@@ -335,7 +338,7 @@ function Cart() {
 
                 {/* Grand total */}
                 <div className="flex justify-between items-end pt-1">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Total</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{t("price")}</span>
                   <div className="text-right">
                     <motion.span
                       key={finalTotal}
@@ -353,14 +356,14 @@ function Cart() {
 
                 <Link to="/checkout">
                   <button className="w-full mt-2 bg-white text-black py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-orange-500 hover:text-white transition-all active:scale-95 shadow-xl flex items-center justify-center gap-2 group">
-                    Secure Checkout
+                    {t("checkout")}
                     <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
                   </button>
                 </Link>
 
                 <div className="flex flex-col gap-2.5 pt-2">
                   <TrustItem icon={ShieldCheck} text="256-bit SSL encryption" />
-                  <TrustItem icon={Truck}       text="Free delivery on this order" />
+                  <TrustItem icon={Truck}       text={t("freeShipping")} />
                   <TrustItem icon={RotateCcw}   text="30-day hassle-free returns" />
                 </div>
               </div>

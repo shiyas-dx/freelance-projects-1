@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useLang } from "../context/LangContext";
 import API from "../services/api";
 import { useCart } from "../context/CartContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -73,6 +74,7 @@ function TrustPill({ icon: Icon, text }) {
 
 /* ── Main ─────────────────────────────────────── */
 function ProductDetail() {
+  const { t } = useLang();
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -90,7 +92,7 @@ function ProductDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setQty(1); // reset qty when product changes
+    setQty(1);
     API.get(`products/${id}/`).then((r) => setProduct(r.data)).catch(() => toast.error("Product not found"));
     API.get(`reviews/?approved=true&product=${id}`).then((r) => setReviews(r.data));
     API.get(`products/`).then((r) => {
@@ -133,21 +135,17 @@ function ProductDetail() {
   const inStock  = product.stock > 0;
   const lowStock = product.stock > 0 && product.stock < 10;
 
-  /* ─────────────────────────────────────────────
-     FIX: pass qty so CartContext adds the correct
-     amount instead of always defaulting to 1.
-  ───────────────────────────────────────────── */
   const handleAddToCart = () => {
     if (!isLoggedIn) { toast.error("Please login first"); navigate("/login"); return; }
-    const ok = addToCart(product, qty);          // ← qty passed here
+    const ok = addToCart(product, qty);
     if (ok !== false) {
-      toast.success(`${qty > 1 ? `${qty}× ` : ""}${product.name} added to bag!`);
+      toast.success(`${qty > 1 ? `${qty}× ` : ""}${product.name} ${t("addToCart").toLowerCase()}!`);
     }
   };
 
   const handleBuyNow = () => {
     if (!isLoggedIn) { toast.error("Please login to continue"); navigate("/login"); return; }
-    const ok = addToCart(product, qty);           // ← qty passed here
+    const ok = addToCart(product, qty);
     if (ok !== false) navigate("/cart");
   };
 
@@ -159,7 +157,7 @@ function ProductDetail() {
       setNewReview({ name: "", rating: 5, comment: "" });
       setTimeout(() => setShowPopup(false), 3000);
       API.get(`reviews/?approved=true&product=${id}`).then((r) => setReviews(r.data));
-    } catch { toast.error("Error submitting review."); }
+    } catch { toast.error(t("error")); }
   };
 
   return (
@@ -176,8 +174,8 @@ function ProductDetail() {
           >
             <CheckCircle2 size={18} className="text-orange-500 flex-shrink-0" />
             <div>
-              <p className="font-black uppercase text-[10px] tracking-widest">Review Submitted</p>
-              <p className="text-gray-400 text-[10px] mt-0.5">Pending approval — thank you!</p>
+              <p className="font-black uppercase text-[10px] tracking-widest">{t("confirm")}</p>
+              <p className="text-gray-400 text-[10px] mt-0.5">{t("loading")}</p>
             </div>
           </motion.div>
         )}
@@ -186,9 +184,9 @@ function ProductDetail() {
       {/* ── BREADCRUMB ────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 pb-2">
         <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
-          <button onClick={() => navigate("/")} className="hover:text-gray-700 transition">Home</button>
+          <button onClick={() => navigate("/")} className="hover:text-gray-700 transition">{t("home")}</button>
           <ChevronRight size={10} />
-          <button onClick={() => navigate("/shop")} className="hover:text-gray-700 transition">Shop</button>
+          <button onClick={() => navigate("/shop")} className="hover:text-gray-700 transition">{t("shopAll")}</button>
           <ChevronRight size={10} />
           <span className="text-gray-800 truncate max-w-[160px]">{product.name}</span>
         </nav>
@@ -209,6 +207,7 @@ function ProductDetail() {
               <button
                 onClick={() => setWishlisted((w) => !w)}
                 className="absolute top-5 right-5 z-10 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform"
+                aria-label={t("wishlist")}
               >
                 <Heart size={16} className={wishlisted ? "fill-red-500 text-red-500" : "text-gray-400"} />
               </button>
@@ -266,7 +265,7 @@ function ProductDetail() {
 
             {/* Trust pills */}
             <div className="flex flex-wrap gap-x-6 gap-y-3 pt-2 px-1">
-              <TrustPill icon={Truck}       text="Free shipping ₹999+" />
+              <TrustPill icon={Truck}       text={t("freeShipping")} />
               <TrustPill icon={RotateCcw}   text="30-day returns" />
               <TrustPill icon={ShieldCheck} text="Secure checkout" />
             </div>
@@ -306,7 +305,7 @@ function ProductDetail() {
 
             {product.description && (
               <p className="text-gray-500 font-semibold text-sm leading-relaxed mb-6">
-                {product.description}
+                {t("description")}: {product.description}
               </p>
             )}
 
@@ -323,23 +322,21 @@ function ProductDetail() {
                   ${!inStock ? "bg-red-500" : lowStock ? "bg-amber-500" : "bg-green-500"}`} />
               </span>
               <span className="text-[10px] font-black uppercase tracking-widest">
-                {!inStock ? "Out of Stock"
+                {!inStock ? t("outOfStock")
                   : lowStock ? `Only ${product.stock} left — order soon`
                   : "In Stock & Ready to Ship"}
               </span>
             </div>
 
-            {/* ── Quantity selector ──────────────────────
-                This now directly controls how many units
-                get added to the cart via handleAddToCart.
-            ─────────────────────────────────────────── */}
+            {/* Quantity selector */}
             {inStock && (
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Qty</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{t("quantity")}</span>
                 <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
                   <button
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
                     className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition font-black text-lg"
+                    aria-label="Decrease quantity"
                   >
                     −
                   </button>
@@ -347,6 +344,7 @@ function ProductDetail() {
                   <button
                     onClick={() => setQty((q) => Math.min(product.stock, q + 1))}
                     className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition font-black text-lg"
+                    aria-label="Increase quantity"
                   >
                     +
                   </button>
@@ -355,7 +353,7 @@ function ProductDetail() {
               </div>
             )}
 
-            {/* ── Total preview when qty > 1 ── */}
+            {/* Total preview when qty > 1 */}
             {inStock && qty > 1 && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -377,7 +375,7 @@ function ProductDetail() {
                 className="flex-1 flex items-center justify-center gap-2 bg-white text-black border-2 border-black py-5 rounded-full font-black uppercase tracking-[0.15em] text-[11px] hover:bg-black hover:text-white transition-all active:scale-95 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ShoppingBag size={15} />
-                Add {qty > 1 ? `${qty} to Bag` : "to Bag"}
+                {t("addToCart")} {qty > 1 && `(${qty})`}
               </button>
               <button
                 onClick={handleBuyNow}
@@ -385,16 +383,16 @@ function ProductDetail() {
                 className="flex-1 flex items-center justify-center gap-2 bg-black text-white py-5 rounded-full font-black uppercase tracking-widest text-[11px] hover:bg-orange-600 transition-all active:scale-95 shadow-xl disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Zap size={15} />
-                Buy {qty > 1 ? `${qty} Now` : "Now"}
+                {t("buyNow")} {qty > 1 && `(${qty})`}
               </button>
             </div>
 
             {/* Meta cards */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { icon: Package, label: "Status", value: inStock ? "Ready" : "Sold Out" },
+                { icon: Package, label: "Status", value: inStock ? t("active") : t("outOfStock") },
                 { icon: Clock,   label: "Added",  value: addedDate },
-                { icon: Star,    label: "Rating", value: `${avgRating} / 5` },
+                { icon: Star,    label: t("rating") || "Rating", value: `${avgRating} / 5` },
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label} className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center">
                   <Icon size={16} className="text-orange-500 mx-auto mb-2" />
@@ -417,7 +415,7 @@ function ProductDetail() {
               className={`pb-4 text-[11px] font-black uppercase tracking-widest transition-all relative
                 ${activeTab === tab ? "text-black" : "text-gray-400 hover:text-gray-700"}`}
             >
-              {tab === "reviews" ? `Reviews (${reviews.length})` : "Product Details"}
+              {tab === "reviews" ? `${t("reviews") || "Reviews"} (${reviews.length})` : t("description")}
               {activeTab === tab && (
                 <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-[2px] bg-orange-500 rounded-full" />
               )}
@@ -438,36 +436,36 @@ function ProductDetail() {
               {/* Review form */}
               <div className="order-2 lg:order-1">
                 <div className="sticky top-24">
-                  <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1">Leave a Review</h3>
+                  <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-1">{t("reviews") || "Reviews"}</h3>
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-8">Share your experience</p>
                   {isLoggedIn ? (
                     <form onSubmit={handleReviewSubmit} className="space-y-4">
                       <input
-                        type="text" placeholder="Your name" required
+                        type="text" placeholder={t("fullName")} required
                         value={newReview.name}
                         onChange={(e) => setNewReview({ ...newReview, name: e.target.value })}
                         className="w-full bg-gray-50 border border-gray-200 focus:border-orange-400 focus:bg-white rounded-2xl px-5 py-4 text-sm font-bold outline-none transition-all placeholder-gray-300"
                       />
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">Your rating</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">{t("rating") || "Rating"}</p>
                         <StarPicker value={newReview.rating} onChange={(n) => setNewReview({ ...newReview, rating: n })} />
                       </div>
                       <textarea
-                        placeholder="Tell us what you think…" required rows="4"
+                        placeholder={t("description")} required rows="4"
                         value={newReview.comment}
                         onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
                         className="w-full bg-gray-50 border border-gray-200 focus:border-orange-400 focus:bg-white rounded-2xl px-5 py-4 text-sm font-bold outline-none transition-all resize-none placeholder-gray-300"
                       />
                       <button className="w-full bg-black text-white py-4 rounded-full font-black uppercase text-[10px] tracking-[0.3em] hover:bg-orange-600 transition-all active:scale-95">
-                        Post Review
+                        {t("confirm")}
                       </button>
                     </form>
                   ) : (
                     <div className="p-8 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200 text-center">
                       <Star size={28} className="text-gray-200 mx-auto mb-4" />
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-6">Login to leave a review</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-6">{t("login")} to leave a review</p>
                       <Link to="/login" className="inline-block w-full py-3.5 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all">
-                        Login Now
+                        {t("loginNow")}
                       </Link>
                     </div>
                   )}
@@ -479,8 +477,8 @@ function ProductDetail() {
                 {reviews.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
                     <Star size={36} className="text-gray-100" />
-                    <p className="font-black uppercase tracking-widest text-gray-300 text-sm">No reviews yet</p>
-                    <p className="text-gray-400 text-xs font-bold">Be the first to share your thoughts</p>
+                    <p className="font-black uppercase tracking-widest text-gray-300 text-sm">{t("noData")}</p>
+                    <p className="text-gray-400 text-xs font-bold">{t("tryOther")}</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -521,11 +519,11 @@ function ProductDetail() {
             >
               <div className="space-y-4">
                 {[
-                  { label: "Product Name", value: product.name },
-                  { label: "Price",        value: `₹${product.price}` },
-                  { label: "Stock",        value: `${product.stock} units` },
-                  { label: "Added On",     value: addedDate },
-                  { label: "Category",     value: product.category_name || "—" },
+                  { label: t("description") || "Product Name", value: product.name },
+                  { label: t("price"),        value: `₹${product.price}` },
+                  { label: t("quantity"),      value: `${product.stock} units` },
+                  { label: "Added On",         value: addedDate },
+                  { label: t("categories"),    value: product.category_name || "—" },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-center justify-between py-4 border-b border-gray-100">
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{label}</span>
@@ -545,13 +543,13 @@ function ProductDetail() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-5 h-[2px] bg-orange-500" />
-                <span className="text-orange-600 font-black uppercase text-[10px] tracking-[0.3em]">Personalized</span>
+                <span className="text-orange-600 font-black uppercase text-[10px] tracking-[0.3em]">{t("relatedProducts")}</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter">You May Also Like</h2>
+              <h2 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter">{t("relatedProducts")}</h2>
             </div>
             <button onClick={() => navigate("/shop")}
               className="hidden sm:flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-black transition">
-              View All <ChevronRight size={13} />
+              {t("viewAllResults", { query: "" })} <ChevronRight size={13} />
             </button>
           </div>
 

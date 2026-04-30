@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useLang } from "../context/LangContext";
 import API from "../services/api";
 import ProductCard from "../components/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -290,6 +291,7 @@ function NewArrivalGrid({ products, loading, onNavigate }) {
 
 /* ══ MAIN COMPONENT ══════════════════════════ */
 function Home() {
+  const { t } = useLang();
   const [products,    setProducts]    = useState([]);
   const [categories,  setCategories]  = useState([]);
   const [slides,      setSlides]      = useState([]);
@@ -414,7 +416,7 @@ function Home() {
                   <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.7, delay: 0.15 }}
                     className="flex items-center gap-3 mb-4 sm:mb-6">
                     <span className="w-8 h-0.5 bg-orange-500" />
-                    <span className="text-orange-400 font-black tracking-widest uppercase text-[10px] sm:text-xs">{slide.subtitle || "New Arrival"}</span>
+                    <span className="text-orange-400 font-black tracking-widest uppercase text-[10px] sm:text-xs">{slide.subtitle || t("newArrival")}</span>
                   </motion.div>
                   <motion.h1 initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }}
                     className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight mb-6 sm:mb-8 uppercase italic tracking-tight text-white max-w-4xl">
@@ -424,11 +426,11 @@ function Home() {
                     className="flex flex-wrap gap-3 sm:gap-4">
                     <button onClick={() => navigate(slide.link_url || "/shop")}
                       className="group flex items-center gap-2 bg-white text-black px-6 py-3.5 sm:px-8 sm:py-4 rounded-full font-black uppercase text-xs sm:text-sm tracking-wider hover:bg-orange-600 hover:text-white transition-all shadow-lg active:scale-95">
-                      Shop Now <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      {t("shopAll")} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                     <button onClick={() => navigate("/shop")}
                       className="px-6 py-3.5 sm:px-7 sm:py-4 border border-white/40 text-white/90 rounded-full font-black uppercase text-xs sm:text-sm tracking-wider hover:border-white hover:text-white transition active:scale-95">
-                      View Collection
+                      {t("viewAllResults", { query: "" })}
                     </button>
                   </motion.div>
                 </div>
@@ -456,7 +458,7 @@ function Home() {
       <section className="bg-gray-50 py-10 sm:py-12 border-y border-gray-100">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <TrustBadge icon={Truck}       title="Free Shipping"   subtitle="On orders over ₹999" />
+            <TrustBadge icon={Truck}       title={t("freeShipping")}   subtitle="On orders over ₹999" />
             <TrustBadge icon={RotateCcw}   title="30-Day Returns"  subtitle="Hassle-free" />
             <TrustBadge icon={ShieldCheck} title="Secure Checkout" subtitle="Protected" />
             <TrustBadge icon={Headphones}  title="24/7 Support"    subtitle="We're here" />
@@ -470,7 +472,7 @@ function Home() {
           <div>
             <div className="flex items-center gap-2.5 mb-3">
               <span className="w-6 h-0.5 bg-orange-500" />
-              <span className="text-orange-600 font-black uppercase text-[10px] sm:text-xs tracking-wider">Explore</span>
+              <span className="text-orange-600 font-black uppercase text-[10px] sm:text-xs tracking-wider">{t("categories")}</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase italic tracking-tight">Shop by Category</h2>
           </div>
@@ -536,7 +538,7 @@ function Home() {
               </div>
               <button onClick={() => navigate("/shop")}
                 className="inline-flex items-center gap-2 bg-white text-orange-600 px-6 py-3 rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-black hover:text-white transition-all active:scale-95 shadow-lg">
-                Shop Sale <ArrowRight size={13} />
+                {t("shopAll")} <ArrowRight size={13} />
               </button>
             </div>
             {/* ── Swipeable product strip ── */}
@@ -573,7 +575,7 @@ function Home() {
             </div>
             <button onClick={() => navigate("/shop")}
               className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-700 text-gray-300 hover:bg-white hover:text-black py-3 rounded-full font-black uppercase text-[10px] tracking-widest transition-all">
-              View All <ArrowRight size={12} />
+              {t("viewAllResults", { query: "" })} <ArrowRight size={12} />
             </button>
           </motion.div>
         </div>
@@ -603,7 +605,7 @@ function Home() {
             <div className="flex items-center gap-4 flex-wrap">
               {premiumProduct && <span className="text-white font-black text-2xl">₹{premiumProduct.price}</span>}
               <div className="inline-flex items-center gap-2 bg-amber-400 text-black px-7 py-3 rounded-full font-black uppercase text-[10px] tracking-widest group-hover:bg-white transition-all shadow-xl">
-                Shop Now <ArrowRight size={13} />
+                {t("buyNow")} <ArrowRight size={13} />
               </div>
             </div>
           </div>
@@ -620,9 +622,9 @@ function Home() {
             className="md:col-span-2 rounded-3xl bg-gray-50 border border-gray-100 p-6 sm:p-7 flex flex-col">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles size={16} className="text-orange-600" />
-              <span className="text-orange-600 font-black uppercase text-[10px] tracking-[0.3em]">Just Dropped</span>
+              <span className="text-orange-600 font-black uppercase text-[10px] tracking-[0.3em]">{t("newArrival")}</span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black uppercase italic tracking-tight text-gray-900 mb-1">New Arrivals</h3>
+            <h3 className="text-2xl sm:text-3xl font-black uppercase italic tracking-tight text-gray-900 mb-1">{t("newArrival")}</h3>
             <p className="text-gray-400 text-xs font-bold mb-4">Fresh styles added this week</p>
             <div className="flex-1">
               <NewArrivalGrid
@@ -633,7 +635,7 @@ function Home() {
             </div>
             <button onClick={() => navigate("/shop")}
               className="mt-4 w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-orange-600 py-3.5 rounded-full font-black uppercase text-[10px] tracking-widest transition-all active:scale-95">
-              See All New Arrivals <ArrowRight size={12} />
+              {t("viewAllResults", { query: t("newArrival") })} <ArrowRight size={12} />
             </button>
           </motion.div>
 
@@ -666,7 +668,7 @@ function Home() {
               </div>
               <button onClick={() => navigate("/shop")}
                 className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-400 text-white px-8 py-3.5 rounded-full font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 shadow-lg">
-                Explore Deals <ArrowRight size={13} />
+                {t("shopAll")} <ArrowRight size={13} />
               </button>
             </div>
             {/* ── Swipeable product strip ── */}
@@ -695,18 +697,18 @@ function Home() {
               <div className="flex items-center gap-2.5 mb-3">
                 <span className="w-6 h-0.5 bg-orange-500" />
                 <span className="text-orange-500 font-black uppercase text-xs tracking-wider flex items-center gap-2">
-                  <TrendingUp size={14} /> Featured
+                  <TrendingUp size={14} /> {t("active")}
                 </span>
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase italic tracking-tight text-white">
-                {activeCategory ? categories.find((c) => c.id == activeCategory)?.name || "Collection" : "Our Products"}
+                {activeCategory ? categories.find((c) => c.id == activeCategory)?.name || t("categories") : t("shopAll")}
               </h2>
             </div>
             <div className="flex items-center gap-4 text-gray-400 text-xs sm:text-sm">
               <span className="font-medium">{products.length} items • Page {currentPage}/{totalPages || 1}</span>
               <button onClick={() => navigate("/shop")}
                 className="flex items-center gap-2 border border-gray-700 text-gray-300 hover:bg-white hover:text-black px-4 py-2 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-colors">
-                View All <ArrowRight size={14} />
+                {t("viewAllResults", { query: "" })} <ArrowRight size={14} />
               </button>
             </div>
           </div>
@@ -725,7 +727,7 @@ function Home() {
           {products.length === 0 && !loading && (
             <div className="text-center py-20 text-gray-500">
               <Sparkles size={36} className="mx-auto mb-4 opacity-70" />
-              <p className="font-medium uppercase tracking-wider text-sm">No products found</p>
+              <p className="font-medium uppercase tracking-wider text-sm">{t("noData")}</p>
             </div>
           )}
 
@@ -736,11 +738,11 @@ function Home() {
               <div className="flex gap-3">
                 <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-700 hover:bg-white hover:text-black disabled:opacity-40 transition-colors text-xs sm:text-sm font-black uppercase tracking-wider">
-                  <ArrowLeft size={14} /> Prev
+                  <ArrowLeft size={14} /> {t("previous")}
                 </button>
                 <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}
                   className="flex items-center gap-2 px-5 py-2.5 bg-orange-600 border border-orange-600 text-white rounded-full hover:bg-orange-500 disabled:opacity-40 transition-colors text-xs sm:text-sm font-black uppercase tracking-wider">
-                  Next <ArrowRight size={14} />
+                  {t("next")} <ArrowRight size={14} />
                 </button>
               </div>
             </div>
@@ -808,9 +810,9 @@ function Home() {
               </div>
             </div>
             <div>
-              <h4 className="font-black text-xs tracking-widest text-orange-600 mb-6 uppercase">Shop</h4>
+              <h4 className="font-black text-xs tracking-widest text-orange-600 mb-6 uppercase">{t("shopAll")}</h4>
               <ul className="space-y-3 text-sm">
-                {["New Arrivals", "Best Sellers", "Sale", "Gift Cards"].map((item) => (
+                {[t("newArrival"), "Best Sellers", "Sale", "Gift Cards"].map((item) => (
                   <li key={item}><button className="hover:text-white transition">{item}</button></li>
                 ))}
               </ul>

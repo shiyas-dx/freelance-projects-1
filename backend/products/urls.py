@@ -9,7 +9,11 @@ from .views import (
     PremiumPickView,
     AdminProductListCreateView,
     AdminProductDetailView,
-    ProductImageDeleteView
+    ProductImageDeleteView,
+    AdminSlideListCreateView,
+    AdminSlideDetailView,
+    AdminCategoryListCreateView,
+    AdminCategoryDetailView
 )
 
 urlpatterns = [
@@ -40,4 +44,10 @@ urlpatterns = [
     path('admin-products/', AdminProductListCreateView.as_view(), name='admin-product-list-create'),
     path('admin-products/<int:pk>/', AdminProductDetailView.as_view(), name='admin-product-detail'),
     path('product-images/<int:pk>/', ProductImageDeleteView.as_view(), name='product-image-delete'),
+    path("admin/slides/",          AdminSlideListCreateView.as_view(), name="admin-slide-list"),
+    path("admin/slides/<int:pk>/", AdminSlideDetailView.as_view(),     name="admin-slide-detail"),
+ 
+    # Categories
+    path("admin/categories/",          AdminCategoryListCreateView.as_view(), name="admin-category-list"),
+    path("admin/categories/<int:pk>/", AdminCategoryDetailView.as_view(),    name="admin-category-detail"),
 ]

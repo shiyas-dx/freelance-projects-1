@@ -1,14 +1,13 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-// Removed IMAGE_BASE import as it's no longer needed for Cloudinary
+import { useLang } from "../context/LangContext";
 import toast from "react-hot-toast";
 
 function ProductCard({ product }) {
+  const { t } = useLang();
   const { addToCart } = useCart();
   const navigate = useNavigate();
   
-  // CLEANED UP: Just use product.image directly. 
-  // The serializer ensures this is always the full URL.
   const imageUrl = product.image;
 
   const handleQuickAdd = (e) => {
@@ -45,6 +44,7 @@ function ProductCard({ product }) {
           <button 
             onClick={handleQuickAdd}
             className="bg-black text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg active:bg-orange-600 transition-colors"
+            aria-label={t("addToCart")}
           >
             <i className="fa-solid fa-plus"></i>
           </button>
@@ -56,7 +56,7 @@ function ProductCard({ product }) {
             onClick={handleQuickAdd}
             className="bg-white text-black px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-black hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0"
           >
-            Quick Add +
+            {t("addToCart")}
           </button>
         </div>
       </Link>
@@ -70,7 +70,7 @@ function ProductCard({ product }) {
             </h3>
           </Link>
           <span className="text-[9px] sm:text-[10px] font-black text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md self-start">
-            NEW
+            {t("newArrival")}
           </span>
         </div>
         
