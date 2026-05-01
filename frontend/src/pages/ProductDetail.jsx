@@ -296,10 +296,10 @@ function ProductDetail() {
 
             {/* Price */}
             <div className="flex items-end gap-4 mb-6 pb-6 border-b border-gray-100">
-              <span className="text-4xl font-black text-gray-900">₹{product.price}</span>
-              <span className="text-xl text-gray-300 line-through font-bold mb-0.5">₹{originalPrice}</span>
+              <span className="text-4xl font-black text-gray-900"><span class="font-semibold text-gray-700">QAR</span>{product.price}</span>
+              <span className="text-xl text-gray-300 line-through font-bold mb-0.5"><span class="font-semibold text-gray-700">QAR</span>{originalPrice}</span>
               <span className="mb-1 bg-green-50 text-green-700 border border-green-100 text-[10px] font-black px-3 py-1.5 rounded-full uppercase">
-                Save ₹{savings}
+                Save <span class="font-semibold text-gray-700">QAR</span>{savings}
               </span>
             </div>
 
@@ -362,7 +362,7 @@ function ProductDetail() {
                 className="flex items-center gap-2 mb-4 px-4 py-2.5 bg-orange-50 border border-orange-100 rounded-2xl w-fit"
               >
                 <span className="text-[10px] font-black uppercase tracking-widest text-orange-600">
-                  {qty} × ₹{product.price} = ₹{(product.price * qty).toFixed(2)}
+                  {qty} × <span class="font-semibold text-gray-700">QAR</span>{product.price} = <span class="font-semibold text-gray-700">QAR</span>{(product.price * qty).toFixed(2)}
                 </span>
               </motion.div>
             )}
@@ -520,7 +520,7 @@ function ProductDetail() {
               <div className="space-y-4">
                 {[
                   { label: t("description") || "Product Name", value: product.name },
-                  { label: t("price"),        value: `₹${product.price}` },
+                  { label: t("price"),        value: `QAR${product.price}` },
                   { label: t("quantity"),      value: `${product.stock} units` },
                   { label: "Added On",         value: addedDate },
                   { label: t("categories"),    value: product.category_name || "—" },
@@ -577,7 +577,7 @@ function ProductDetail() {
                     <div className="mt-4 px-1">
                       <h4 className="font-black uppercase text-xs text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-1 tracking-tight">{item.name}</h4>
                       <div className="flex items-center gap-2 mt-1.5">
-                        <span className="font-black text-sm text-gray-900">₹{item.price}</span>
+                        <span className="font-black text-sm text-gray-900"><span class="font-semibold text-gray-700">QAR</span>{item.price}</span>
                         <span className="text-[10px] text-gray-300 line-through font-bold">₹{(item.price * 1.2).toFixed(2)}</span>
                       </div>
                     </div>

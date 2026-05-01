@@ -162,7 +162,7 @@ function PromoStrip({ products, loading, dark = false, onNavigate }) {
               />
             </div>
             <p className={`text-[9px] font-black mt-1.5 truncate uppercase ${dark ? "text-white" : "text-gray-900"}`}>
-              ₹{p.price}
+              <span class="font-semibold text-gray-700">QAR</span>{p.price}
             </p>
           </motion.div>
         </SwiperSlide>
@@ -220,7 +220,7 @@ function BestSellerGrid({ products, loading, onNavigate }) {
                     <div className="absolute top-1.5 left-1.5 bg-amber-400 text-black text-[7px] font-black px-1.5 py-0.5 rounded-full">#1</div>
                   )}
                 </div>
-                <p className="text-white text-[9px] font-black mt-1.5 truncate uppercase">₹{p.price}</p>
+                <p className="text-white text-[9px] font-black mt-1.5 truncate uppercase"><span class="font-semibold text-gray-700">QAR</span>{p.price}</p>
               </motion.div>
             ))}
           </div>
@@ -278,7 +278,7 @@ function NewArrivalGrid({ products, loading, onNavigate }) {
                 </div>
                 <div className="mt-1.5">
                   <p className="text-gray-900 text-[9px] font-black truncate uppercase tracking-tight">{p.name}</p>
-                  <p className="text-orange-600 text-[10px] font-black">₹{p.price}</p>
+                  <p className="text-orange-600 text-[10px] font-black"><span class="font-semibold text-gray-700">QAR</span>{p.price}</p>
                 </div>
               </motion.div>
             ))}
@@ -458,8 +458,7 @@ function Home() {
       <section className="bg-gray-50 py-10 sm:py-12 border-y border-gray-100">
         <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <TrustBadge icon={Truck}       title={t("freeShipping")}   subtitle="On orders over ₹999" />
-            <TrustBadge icon={RotateCcw}   title="30-Day Returns"  subtitle="Hassle-free" />
+            <TrustBadge icon={Truck}       title={t("freeShipping")}   subtitle="On orders over QAR 999" />
             <TrustBadge icon={ShieldCheck} title="Secure Checkout" subtitle="Protected" />
             <TrustBadge icon={Headphones}  title="24/7 Support"    subtitle="We're here" />
           </div>
@@ -603,7 +602,7 @@ function Home() {
             </h3>
             <p className="text-gray-300 font-bold text-sm mb-6 max-w-sm">Crafted for those who demand the finest. Limited quantities available.</p>
             <div className="flex items-center gap-4 flex-wrap">
-              {premiumProduct && <span className="text-white font-black text-2xl">₹{premiumProduct.price}</span>}
+              {premiumProduct && <span className="text-white font-black text-2xl"><span class="font-semibold text-gray-700">QAR</span>{premiumProduct.price}</span>}
               <div className="inline-flex items-center gap-2 bg-amber-400 text-black px-7 py-3 rounded-full font-black uppercase text-[10px] tracking-widest group-hover:bg-white transition-all shadow-xl">
                 {t("buyNow")} <ArrowRight size={13} />
               </div>

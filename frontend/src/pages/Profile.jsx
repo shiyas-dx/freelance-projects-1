@@ -188,7 +188,7 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
         </div>
         <div className="flex items-center gap-4 ml-16 sm:ml-0">
           <StatusBadge status={order.status} />
-          <span className="font-black text-gray-900">₹{order.total_price}</span>
+          <span className="font-black text-gray-900"><span class="font-semibold text-gray-700">QAR</span>{order.total_price}</span>
           <ChevronDown
             size={16}
             className={`text-gray-400 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
@@ -234,7 +234,7 @@ function OrderCard({ order, onCancelRequest, onReorder }) {
                   <p className="font-black text-gray-900 text-sm">
                     {order.items?.length} {order.items?.length === 1 ? "product" : "products"}
                   </p>
-                  <p className="text-xs text-gray-500 font-bold">{t("price")}: ₹{order.total_price}</p>
+                  <p className="text-xs text-gray-500 font-bold">{t("price")}: <span class="font-semibold text-gray-700">QAR</span>{order.total_price}</p>
                 </div>
               </div>
 
@@ -574,7 +574,7 @@ function Profile() {
                             className="w-full pl-14 pr-6 py-5 rounded-3xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:border-black outline-none transition-all font-bold text-sm"
                             value={profile.phone}
                             onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                            placeholder="+91 ..."
+                            placeholder="+974 ..."
                           />
                         </div>
                       </div>

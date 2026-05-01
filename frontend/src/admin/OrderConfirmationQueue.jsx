@@ -34,7 +34,7 @@ function buildConfirmMsg(order, fromNumber = "") {
     const name  = it.product?.name || it.product_name || `Item #${it.id}`;
     const qty   = it.quantity || 1;
     const price = parseFloat(it.price_at_purchase || it.product?.price || 0);
-    return `  • ${name} × ${qty}  →  ₹${(price * qty).toFixed(2)}`;
+    return `  • ${name} × ${qty}  →  QAR${(price * qty).toFixed(2)}`;
   }).join("\n");
 
   const addr = [order.address, order.city, order.zip ? `PIN: ${order.zip}` : ""].filter(Boolean).join(", ");
@@ -47,7 +47,7 @@ function buildConfirmMsg(order, fromNumber = "") {
     "*ORDER SUMMARY:*",
     items || "  (no items)",
     "",
-    `*TOTAL: ₹${order.total_price}*`,
+    `*TOTAL: QAR${order.total_price}*`,
     "",
     "*DELIVERY ADDRESS:*",
     addr,
@@ -128,7 +128,7 @@ function OrderCard({ order, onConfirm, onCancel, fromNumber }) {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="font-black text-lg text-gray-900">₹{order.total_price}</span>
+            <span className="font-black text-lg text-gray-900"><span class="font-semibold text-gray-700">QAR</span>{order.total_price}</span>
             <button
               onClick={() => setExpanded((v) => !v)}
               className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors"
@@ -176,7 +176,7 @@ function OrderCard({ order, onConfirm, onCancel, fromNumber }) {
                 return (
                   <div key={item.id || i} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                     <span className="text-[12px] font-bold text-gray-700">{name} × {qty}</span>
-                    <span className="text-[12px] font-black text-gray-900">₹{(price * qty).toFixed(2)}</span>
+                    <span className="text-[12px] font-black text-gray-900"><span class="font-semibold text-gray-700">QAR</span>{(price * qty).toFixed(2)}</span>
                   </div>
                 );
               })}
@@ -279,7 +279,7 @@ function FromNumberBar({ value, onChange }) {
           type="tel"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="+91 98765 43210"
+          placeholder="+974 00000000"
           className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-gray-50 text-sm font-bold outline-none focus:border-orange-400 focus:bg-white transition"
         />
       </div>

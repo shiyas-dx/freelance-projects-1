@@ -80,7 +80,7 @@ function buildBillMsg(order, fromNumber = "") {
     const name  = it.product?.name || it.product_name || `Item #${it.id}`;
     const qty   = it.quantity || 1;
     const price = parseFloat(it.price_at_purchase || it.product?.price || 0);
-    return `  • ${name} × ${qty}  →  ₹${(price * qty).toFixed(2)}`;
+    return `  • ${name} × ${qty}  →  QAR${(price * qty).toFixed(2)}`;
   }).join("\n");
 
   const addr = [order.address, order.city, order.zip ? `PIN: ${order.zip}` : ""].filter(Boolean).join(", ");
@@ -97,7 +97,7 @@ function buildBillMsg(order, fromNumber = "") {
     items || "  (no items)",
     "",
     `━━━━━━━━━━━━━━━━━━━━━━`,
-    `*TOTAL: ₹${order.total_price}*`,
+    `*TOTAL: QAR${order.total_price}*`,
     "",
     "*DELIVERY TO:*",
     addr,
@@ -117,8 +117,8 @@ function openBillPDF(order) {
     return `<tr>
       <td>${name}</td>
       <td style="text-align:center">${qty}</td>
-      <td style="text-align:right">₹${price.toFixed(2)}</td>
-      <td style="text-align:right">₹${(price * qty).toFixed(2)}</td>
+      <td style="text-align:right">QAR${price.toFixed(2)}</td>
+      <td style="text-align:right">QAR${(price * qty).toFixed(2)}</td>
     </tr>`;
   }).join("");
 
@@ -182,7 +182,7 @@ function openBillPDF(order) {
         ${itemRows || `<tr><td colspan="4" style="text-align:center;padding:16px;color:#aaa">No item details available</td></tr>`}
         <tr class="total-row">
           <td colspan="3" style="text-align:right">Order Total</td>
-          <td style="text-align:right">₹${order.total_price}</td>
+          <td style="text-align:right"><span class="font-semibold text-gray-700">QAR</span>${order.total_price}</td>
         </tr>
       </tbody>
     </table>
@@ -321,7 +321,7 @@ function BillSection({ order }) {
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base select-none">🇮🇳</span>
             <input type="tel" value={fromNumber} onChange={(e) => setFromNumber(e.target.value)}
-              placeholder="+91 98765 43210"
+              placeholder="+974 00000000"
               className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-sky-200 bg-white text-sm font-bold outline-none focus:border-sky-400 transition" />
           </div>
         </div>
@@ -515,11 +515,11 @@ function OrderDrawer({ order, onClose, onStatusChange, onDeleteOrder }) {
                               <p className="text-[11px] font-black text-gray-800 leading-snug">{product.name || `Product #${i + 1}`}</p>
                               <div className="flex items-center gap-2 mt-1.5">
                                 <span className="text-[10px] font-black text-gray-500 bg-gray-200 px-2 py-0.5 rounded-lg">Qty × {qty}</span>
-                                <span className="text-[10px] text-gray-400 font-bold">@ ₹{unitPrice.toFixed(2)}</span>
+                                <span className="text-[10px] text-gray-400 font-bold">@ <span class="font-semibold text-gray-700">QAR</span>{unitPrice.toFixed(2)}</span>
                               </div>
                             </div>
                             <div className="text-right flex-shrink-0">
-                              <p className="text-[12px] font-black text-gray-900">₹{(unitPrice * qty).toFixed(2)}</p>
+                              <p className="text-[12px] font-black text-gray-900"><span class="font-semibold text-gray-700">QAR</span>{(unitPrice * qty).toFixed(2)}</p>
                               {product.id && (
                                 <a href={`/admin/products/${product.id}`} target="_blank" rel="noreferrer"
                                   onClick={(e) => e.stopPropagation()}
@@ -550,12 +550,12 @@ function OrderDrawer({ order, onClose, onStatusChange, onDeleteOrder }) {
                 {local.items?.length > 0 && (
                   <div className="flex justify-between items-center">
                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Subtotal</p>
-                    <p className="text-[11px] font-black text-gray-700">₹{computed}</p>
+                    <p className="text-[11px] font-black text-gray-700"><span class="font-semibold text-gray-700">QAR</span>{computed}</p>
                   </div>
                 )}
                 <div className="flex justify-between items-center">
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Order Total</p>
-                  <p className="text-2xl font-black text-gray-900 tracking-tight">₹{local.total_price}</p>
+                  <p className="text-2xl font-black text-gray-900 tracking-tight"><span class="font-semibold text-gray-700">QAR</span>{local.total_price}</p>
                 </div>
                 <button onClick={() => setDeleteConfirm(true)}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border border-rose-100 text-rose-400 text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all">
@@ -633,7 +633,7 @@ const OrderRow = memo(({ order, isSelected, onToggle, onClick, onStatusChange, o
       <StatusPill status={order.status} onChange={(s) => onStatusChange(order.id, s)} />
     </td>
     <td className="px-4 py-4 text-right" onClick={onClick}>
-      <p className="font-black text-sm text-gray-900">₹{order.total_price}</p>
+      <p className="font-black text-sm text-gray-900"><span class="font-semibold text-gray-700">QAR</span>{order.total_price}</p>
     </td>
     <td className="px-3 py-4" onClick={(e) => e.stopPropagation()}>
       <button onClick={() => onDelete(order.id)} title="Move to history"
@@ -792,7 +792,7 @@ export default function OrderManagement() {
         <StatCard label="Total Active"    value={stats.total}          sub="Excl. history"       accent="#6366f1" icon={ShoppingBag} />
         <StatCard label="Confirmed"       value={stats.admin_confirmed || 0} sub="Ready to ship" accent="#7c3aed" icon={BadgeCheck}  />
         <StatCard label="In Transit"      value={stats.shipped || 0}   sub="Currently shipped"   accent="#0ea5e9" icon={Truck}       />
-        <StatCard label="Revenue"         value={`₹${Number(stats.revenue).toLocaleString()}`} sub="Excl. cancelled" accent="#10b981" icon={BarChart3} />
+        <StatCard label="Revenue"         value={`QAR${Number(stats.revenue).toLocaleString()}`} sub="Excl. cancelled" accent="#10b981" icon={BarChart3} />
       </div>
 
       {/* Filters */}
@@ -878,7 +878,7 @@ export default function OrderManagement() {
               <p className="font-black text-gray-700 uppercase tracking-tight">No orders found</p>
               <p className="text-gray-400 font-bold text-sm mt-1">Try adjusting filters or check the confirm queue.</p>
             </div>
-            <a href="/admin/order-confirmation"
+            <a href="/admin/confirmation-queue"
               className="inline-flex items-center gap-2 bg-black text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition shadow-lg">
               <Inbox size={12} /> Go to Confirm Queue
             </a>

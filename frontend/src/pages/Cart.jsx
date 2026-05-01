@@ -172,9 +172,9 @@ function Cart() {
                         </div>
 
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-orange-600 font-black text-lg">₹{item.price}</span>
+                          <span className="text-orange-600 font-black text-lg"><span class="font-semibold text-gray-700">QAR</span>{item.price}</span>
                           <span className="text-[10px] text-gray-300 line-through font-bold">
-                            ₹{(item.price * 1.2).toFixed(2)}
+                            <span class="font-semibold text-gray-700">QAR</span>{(item.price * 1.2).toFixed(2)}
                           </span>
                         </div>
 
@@ -216,7 +216,7 @@ function Cart() {
                             animate={{ opacity: 1, y: 0 }}
                             className="font-black text-gray-900 text-base"
                           >
-                            ₹{(item.price * item.quantity).toFixed(2)}
+                            <span class="font-semibold text-gray-700">QAR</span>{(item.price * item.quantity).toFixed(2)}
                           </motion.p>
                         </div>
                       </div>
@@ -262,7 +262,7 @@ function Cart() {
                     </div>
                     <div className="flex-shrink-0 text-right">
                       <p className="text-[11px] font-black text-white">
-                        ₹{(item.price * item.quantity).toFixed(2)}
+                        <span class="font-semibold text-gray-700">QAR</span>{(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -312,7 +312,7 @@ function Cart() {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500 font-bold">{t("subtotal")}</span>
-                    <span className="text-white font-black">₹{cartTotal}</span>
+                    <span className="text-white font-black"><span class="font-semibold text-gray-700">QAR</span>{cartTotal}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500 font-bold">Shipping</span>
@@ -325,7 +325,7 @@ function Cart() {
                       className="flex justify-between text-sm"
                     >
                       <span className="text-green-400 font-bold">Discount ({discount}%)</span>
-                      <span className="text-green-400 font-black">−₹{discountAmount}</span>
+                      <span className="text-green-400 font-black">−<span class="font-semibold text-gray-700">QAR</span>{discountAmount}</span>
                     </motion.div>
                   )}
                   <div className="flex justify-between text-sm">
@@ -346,10 +346,10 @@ function Cart() {
                       animate={{ opacity: 1, y: 0 }}
                       className="text-3xl font-black text-white block leading-none"
                     >
-                      ₹{finalTotal}
+                      <span class="font-semibold text-gray-700">QAR</span>{finalTotal}
                     </motion.span>
                     {appliedCode && (
-                      <p className="text-[9px] text-green-400 font-bold mt-1">You saved ₹{discountAmount}!</p>
+                      <p className="text-[9px] text-green-400 font-bold mt-1">You saved <span class="font-semibold text-gray-700">QAR</span>{discountAmount}!</p>
                     )}
                   </div>
                 </div>

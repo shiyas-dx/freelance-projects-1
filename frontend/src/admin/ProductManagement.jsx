@@ -392,7 +392,7 @@ const handleDeleteExistingImage = async (imageId) => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">
-                        Price (₹) <span className="text-red-400">*</span>
+                        Price (QAR) <span className="text-red-400">*</span>
                       </label>
                       <input
                         className={inputCls}
@@ -786,8 +786,8 @@ const toggleField = async (id, fieldName, currentValue) => {
                       {/* Price */}
                       <td className="px-4 py-4">
                         <div>
-                          <p className="font-black text-gray-900 text-sm">₹{p.price}</p>
-                          <p className="text-[10px] text-gray-300 line-through font-bold">₹{(p.price * 1.2).toFixed(0)}</p>
+                          <p className="font-black text-gray-900 text-sm"><span class="font-semibold text-gray-700">QAR</span>{p.price}</p>
+                          <p className="text-[10px] text-gray-300 line-through font-bold"><span class="font-semibold text-gray-700">QAR</span>{(p.price * 1.2).toFixed(0)}</p>
                         </div>
                       </td>
 

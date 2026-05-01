@@ -309,7 +309,7 @@ function Checkout() {
                         {t("quantity")}: {item.quantity}
                       </p>
                     </div>
-                    <p className="font-black text-sm italic">₹{item.price * item.quantity}</p>
+                    <p className="font-black text-sm italic"><span class="font-semibold text-gray-700">QAR</span>{item.price * item.quantity}</p>
                   </div>
                 ))}
               </div>
@@ -319,7 +319,7 @@ function Checkout() {
                     {t("price")}
                   </span>
                   <span className="text-4xl font-black text-gray-900 leading-none italic tracking-tighter">
-                    ₹{cartTotal}
+                    <span class="font-semibold text-gray-700">QAR</span>{cartTotal}
                   </span>
                 </div>
               </div>

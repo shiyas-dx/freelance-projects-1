@@ -76,7 +76,7 @@ function ProductCard({ product }) {
         
         <div className="flex items-center justify-between mt-auto">
           <p className="text-sm sm:text-lg font-black text-gray-800">
-            ₹{product.price}
+            <span class="font-semibold text-gray-700">QAR</span>{product.price}
           </p>
           <p className="hidden sm:block text-[10px] text-gray-400 font-medium italic">
             {product.category?.name}

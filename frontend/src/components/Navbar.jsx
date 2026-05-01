@@ -128,8 +128,8 @@ function SearchDropdown({ results, query, loading, onSelect, onViewAll, highligh
                       </p>
                     </div>
                     <div className="flex-shrink-0 text-right">
-                      <p className="text-sm font-black text-gray-900">₹{product.price}</p>
-                      <p className="text-[10px] text-gray-300 line-through">₹{originalPrice}</p>
+                      <p className="text-sm font-black text-gray-900"><span class="font-semibold text-gray-700">QAR</span>{product.price}</p>
+                      <p className="text-[10px] text-gray-300 line-through"><span class="font-semibold text-gray-700">QAR</span>{originalPrice}</p>
                     </div>
                     <ArrowUpRight
                       size={13}
