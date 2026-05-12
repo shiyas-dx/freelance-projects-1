@@ -397,7 +397,7 @@ function Home() {
     <div className="bg-white min-h-screen overflow-x-hidden">
 
       {/* ══ HERO ══════════════════════════════════ */}
-      <section className="relative h-[30dvh] min-h-[200px] sm:h-[80dvh] md:h-[85dvh] lg:h-[90dvh] bg-black overflow-hidden">
+      <section className="relative pt-16 h-[30dvh] min-h-[200px] sm:h-[80dvh] md:h-[85dvh] lg:h-[90dvh] bg-black overflow-hidden">
         <Swiper
           modules={[Autoplay, Pagination, EffectFade]} effect="fade"
           autoplay={{ delay: 5000, disableOnInteraction: false }}

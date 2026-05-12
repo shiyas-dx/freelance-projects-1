@@ -27,7 +27,8 @@ function ConfirmDialog({ open, onConfirm, onCancel, message }) {
             initial={{ opacity: 0, scale: 0.95, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-3xl shadow-2xl p-7 w-full max-w-sm"
+            style={{ position: "fixed", inset: 0, margin: "auto", zIndex: 50, width: "100%", maxWidth: "24rem", height: "fit-content" }}
+            className="bg-white rounded-3xl shadow-2xl p-7"
           >
             <div className="flex items-start gap-4 mb-5">
               <div className="w-11 h-11 rounded-2xl bg-red-50 flex items-center justify-center flex-shrink-0">
@@ -171,11 +172,6 @@ function SlideCard({ slide, index, total, onSave, onDelete, onMoveUp, onMoveDown
 
         {/* Actions */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          {/* <button onClick={() => setForm({ ...form, is_active: !form.is_active })}
-            title={form.is_active ? "Hide slide" : "Show slide"}
-            className={`p-2 rounded-xl transition border ${form.is_active ? "text-green-500 bg-green-50 border-green-100 hover:bg-green-100" : "text-gray-400 bg-gray-50 border-gray-100 hover:bg-gray-100"}`}>
-            {form.is_active ? <Eye size={14} /> : <EyeOff size={14} />}
-          </button> */}
           <button onClick={() => setExpanded((v) => !v)}
             className="p-2 rounded-xl border border-gray-100 text-gray-500 hover:bg-gray-50 transition">
             <Edit2 size={14} />
@@ -469,6 +465,17 @@ export default function MediaManagement() {
 
   const inputCls = "w-full bg-gray-50 border border-gray-200 focus:border-orange-400 focus:bg-white rounded-2xl px-4 py-3 text-sm font-bold outline-none transition placeholder-gray-300";
 
+  /* ── shared modal overlay style ── */
+  const overlayStyle = {
+    position: "fixed",
+    inset: 0,
+    zIndex: 50,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "1rem",
+  };
+
   return (
     <div className="space-y-6 max-w-5xl">
 
@@ -552,83 +559,6 @@ export default function MediaManagement() {
                 </AnimatePresence>
               </div>
             )}
-
-            {/* ── NEW SLIDE MODAL ── */}
-            <AnimatePresence>
-              {newSlideOpen && (
-                <>
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => setNewSlideOpen(false)} />
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.96, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.96, y: 20 }}
-                    className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto"
-                  >
-                    <div className="sticky top-0 bg-white z-10 flex items-center justify-between px-7 py-5 border-b border-gray-100">
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">New Hero Slide</p>
-                        <h2 className="text-xl font-black uppercase italic tracking-tighter text-gray-900">Add Slide</h2>
-                      </div>
-                      <button onClick={() => setNewSlideOpen(false)} className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition">
-                        <X size={18} />
-                      </button>
-                    </div>
-
-                    <div className="p-7 space-y-5">
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Banner Image <span className="text-red-400">*</span></p>
-                        <ImageZone
-                          currentImage={null}
-                          preview={newPreview}
-                          onFileChange={(f) => { setNewFile(f); setNewPreview(URL.createObjectURL(f)); }}
-                          aspect="16/9"
-                          label="Upload banner image"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Title <span className="text-red-400">*</span></label>
-                          <input className={inputCls} placeholder="e.g. NEW SEASON" value={newForm.title}
-                            onChange={(e) => setNewForm({ ...newForm, title: e.target.value })} />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Subtitle</label>
-                          <input className={inputCls} placeholder="e.g. Premium Style" value={newForm.subtitle}
-                            onChange={(e) => setNewForm({ ...newForm, subtitle: e.target.value })} />
-                        </div>
-                        <div className="sm:col-span-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Button Link</label>
-                          <input className={inputCls} placeholder="/shop" value={newForm.link_url}
-                            onChange={(e) => setNewForm({ ...newForm, link_url: e.target.value })} />
-                        </div>
-                      </div>
-
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <button type="button" onClick={() => setNewForm({ ...newForm, is_active: !newForm.is_active })}
-                          className={`w-10 h-6 rounded-full transition-colors relative flex-shrink-0 ${newForm.is_active ? "bg-black" : "bg-gray-200"}`}>
-                          <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${newForm.is_active ? "translate-x-5" : "translate-x-1"}`} />
-                        </button>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Active (show on homepage)</span>
-                      </label>
-
-                      <div className="flex gap-3 pt-2">
-                        <button onClick={() => setNewSlideOpen(false)}
-                          className="flex-1 py-4 rounded-2xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition">
-                          Cancel
-                        </button>
-                        <button onClick={handleCreateSlide} disabled={creating || !newFile || !newForm.title}
-                          className="flex-1 py-4 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 disabled:opacity-40 transition flex items-center justify-center gap-2">
-                          {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                          {creating ? "Creating…" : "Create Slide"}
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                </>
-              )}
-            </AnimatePresence>
           </motion.div>
         )}
 
@@ -669,61 +599,153 @@ export default function MediaManagement() {
         )}
       </AnimatePresence>
 
-      {/* ── NEW CATEGORY MODAL (full control) ── */}
+      {/* ── NEW SLIDE MODAL ── */}
       <AnimatePresence>
-        {newCatOpen && (
+        {newSlideOpen && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => setNewCatOpen(false)} />
             <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 20 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-3xl shadow-2xl w-full max-w-md p-7"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">New Category</p>
-                  <h2 className="text-xl font-black uppercase italic tracking-tighter text-gray-900">Add Category</h2>
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", zIndex: 50 }}
+              onClick={() => setNewSlideOpen(false)}
+            />
+            <div style={overlayStyle} onClick={() => setNewSlideOpen(false)}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-3xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto"
+                style={{ position: "relative", zIndex: 51 }}
+              >
+                <div className="sticky top-0 bg-white z-10 flex items-center justify-between px-7 py-5 border-b border-gray-100">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">New Hero Slide</p>
+                    <h2 className="text-xl font-black uppercase italic tracking-tighter text-gray-900">Add Slide</h2>
+                  </div>
+                  <button onClick={() => setNewSlideOpen(false)} className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition">
+                    <X size={18} />
+                  </button>
                 </div>
-                <button onClick={() => setNewCatOpen(false)} className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition">
-                  <X size={18} />
-                </button>
-              </div>
 
-              <input
-                value={newCatName}
-                onChange={(e) => setNewCatName(e.target.value)}
-                placeholder="Category name (e.g. Sneakers)"
-                className={inputCls}
-              />
+                <div className="p-7 space-y-5">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Banner Image <span className="text-red-400">*</span></p>
+                    <ImageZone
+                      currentImage={null}
+                      preview={newPreview}
+                      onFileChange={(f) => { setNewFile(f); setNewPreview(URL.createObjectURL(f)); }}
+                      aspect="16/9"
+                      label="Upload banner image"
+                    />
+                  </div>
 
-              <div className="mt-6">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Category Image</p>
-                <ImageZone
-                  currentImage={null}
-                  preview={newCatPreview}
-                  onFileChange={(f) => { setNewCatFile(f); setNewCatPreview(URL.createObjectURL(f)); }}
-                  aspect="4/5"
-                  label="Upload category image"
-                />
-              </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Title <span className="text-red-400">*</span></label>
+                      <input className={inputCls} placeholder="e.g. NEW SEASON" value={newForm.title}
+                        onChange={(e) => setNewForm({ ...newForm, title: e.target.value })} />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Subtitle</label>
+                      <input className={inputCls} placeholder="e.g. Premium Style" value={newForm.subtitle}
+                        onChange={(e) => setNewForm({ ...newForm, subtitle: e.target.value })} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 block">Button Link</label>
+                      <input className={inputCls} placeholder="/shop" value={newForm.link_url}
+                        onChange={(e) => setNewForm({ ...newForm, link_url: e.target.value })} />
+                    </div>
+                  </div>
 
-              <div className="flex gap-3 mt-8">
-                <button onClick={() => setNewCatOpen(false)}
-                  className="flex-1 py-4 rounded-2xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition">
-                  Cancel
-                </button>
-                <button onClick={handleCreateCategory} disabled={creatingCat || !newCatName}
-                  className="flex-1 py-4 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 disabled:opacity-40 transition flex items-center justify-center gap-2">
-                  {creatingCat ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                  {creatingCat ? "Creating…" : "Create Category"}
-                </button>
-              </div>
-            </motion.div>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <button type="button" onClick={() => setNewForm({ ...newForm, is_active: !newForm.is_active })}
+                      className={`w-10 h-6 rounded-full transition-colors relative flex-shrink-0 ${newForm.is_active ? "bg-black" : "bg-gray-200"}`}>
+                      <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${newForm.is_active ? "translate-x-5" : "translate-x-1"}`} />
+                    </button>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">Active (show on homepage)</span>
+                  </label>
+
+                  <div className="flex gap-3 pt-2">
+                    <button onClick={() => setNewSlideOpen(false)}
+                      className="flex-1 py-4 rounded-2xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition">
+                      Cancel
+                    </button>
+                    <button onClick={handleCreateSlide} disabled={creating || !newFile || !newForm.title}
+                      className="flex-1 py-4 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 disabled:opacity-40 transition flex items-center justify-center gap-2">
+                      {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                      {creating ? "Creating…" : "Create Slide"}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
+
+      {/* ── NEW CATEGORY MODAL ── */}
+      <AnimatePresence>
+        {newCatOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", zIndex: 50 }}
+              onClick={() => setNewCatOpen(false)}
+            />
+            <div style={overlayStyle} onClick={() => setNewCatOpen(false)}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-7"
+                style={{ position: "relative", zIndex: 51 }}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">New Category</p>
+                    <h2 className="text-xl font-black uppercase italic tracking-tighter text-gray-900">Add Category</h2>
+                  </div>
+                  <button onClick={() => setNewCatOpen(false)} className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition">
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <input
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  placeholder="Category name (e.g. Sneakers)"
+                  className={inputCls}
+                />
+
+                <div className="mt-6">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Category Image</p>
+                  <ImageZone
+                    currentImage={null}
+                    preview={newCatPreview}
+                    onFileChange={(f) => { setNewCatFile(f); setNewCatPreview(URL.createObjectURL(f)); }}
+                    aspect="4/5"
+                    label="Upload category image"
+                  />
+                </div>
+
+                <div className="flex gap-3 mt-8">
+                  <button onClick={() => setNewCatOpen(false)}
+                    className="flex-1 py-4 rounded-2xl border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition">
+                    Cancel
+                  </button>
+                  <button onClick={handleCreateCategory} disabled={creatingCat || !newCatName}
+                    className="flex-1 py-4 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 disabled:opacity-40 transition flex items-center justify-center gap-2">
+                    {creatingCat ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                    {creatingCat ? "Creating…" : "Create Category"}
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
